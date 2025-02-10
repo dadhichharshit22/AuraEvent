@@ -82,14 +82,6 @@ npm run dev
 ```
 
 
-## Available Scripts
-
-In both frontend and backend directories, you can run:
-
-###  `npm run dev` 
-Runs the app in development mode
-- Frontend: [http://localhost:3000](http://localhost:5173)
-- Backend: [http://localhost:8085](http://localhost:8085)
 
 
 
