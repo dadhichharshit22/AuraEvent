@@ -6,16 +6,17 @@ AuraEvent is a full-stack event management application built with TypeScript, de
 
 🔹 Key Features:
 
--Event Creation & Management – Users can create, edit, and manage events effortlessly.
--Attendee Registration – Seamless RSVP and participant tracking.
--Real-time Updates – Stay informed with live status updates.
--Dark Mode & Modern UI – Styled with shadcn/ui for an elegant and responsive design.
+- Event Creation & Management 
+- Users can create, edit, and manage events effortlessly.
+- Attendee Registration – Seamless RSVP and participant tracking.
+- Real-time Updates – Stay informed with live status updates.
+- Dark Mode & Modern UI – Styled with shadcn/ui for an elegant and responsive design.
 
 🛠 Tech Stack: Frontend: React with Context API for state management.
 
--Backend: Node.js + Express for handling API requests.
--Database: MongoDB for efficient event storage.
--Authentication: JWT-based secure login.
+- Backend: Node.js + Express for handling API requests.
+- Database: MongoDB for efficient event storage.
+- Authentication: JWT-based secure login.
 
 With AuraEvent, managing events becomes effortless, thanks to its clean UI, smooth state handling with Context API, and real-time interactions. 🚀
 
@@ -57,7 +58,7 @@ RAZORPAY_SECRET = your razorpay secret key
 
 4. Start the backend server:
 ```bash
-# Development mode
+
 npm run dev
 ```
 
