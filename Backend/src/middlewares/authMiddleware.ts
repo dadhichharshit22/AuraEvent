@@ -20,7 +20,7 @@ export const authMiddleware = async (
 
   try {
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
-    const user = await User.findById(decoded.userId).select("-password");
+    const user = await User.findById(decoded.userId).select("password");
 
     if (!user) {
       res.status(404).send({ message: "User not found" });
