@@ -35,7 +35,7 @@ With AuraEvent, managing events becomes effortless, thanks to its clean UI, smoo
 ### Clone the Repository
 ```bash
 git clone https://github.com/dadhichharshit22/AuraEvent.git
-cd auraEvent
+cd event-management-project
 ```
 
 ### Backend Setup
@@ -64,10 +64,13 @@ RAZORPAY_SECRET = your razorpay secret key
 ```bash
 # Development mode
 npm run dev
+```bash
 
 
 ### Frontend Setup
+
 1. Navigate to frontend directory:
+```bash
 cd frontend
 ```
 
@@ -76,10 +79,30 @@ cd frontend
 npm install
 ```
 
+3. Create a `.env` file in the frontend directory:
+```env
+REACT_APP_API_URL = http://localhost:5173
+```
 
-3. Start the frontend development server:
+4. Start the frontend development server:
 ```bash
 npm start
+```
+
+### Frontend Setup
+1. Navigate to frontend directory:
+```bash
+cd frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+4. Start the frontend development server:
+```bash
+npm run dev
 ```
 
 
