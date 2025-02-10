@@ -1,5 +1,7 @@
 
-Aura Event
+## Aura Event
+
+
 AuraEvent is a full-stack event management application built with TypeScript, designed to simplify event organization while offering a modern and intuitive user experience.
 
 🔹 Key Features:
