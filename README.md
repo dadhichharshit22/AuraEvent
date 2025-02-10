@@ -35,7 +35,7 @@ With AuraEvent, managing events becomes effortless, thanks to its clean UI, smoo
 ### Clone the Repository
 ```bash
 git clone https://github.com/dadhichharshit22/AuraEvent.git
-cd event-management-project
+cd auraEvent
 ```
 
 ### Backend Setup
