@@ -64,30 +64,10 @@ RAZORPAY_SECRET = your razorpay secret key
 ```bash
 # Development mode
 npm run dev
-```bash
-
-
-### Frontend Setup
-
-1. Navigate to frontend directory:
-```bash
-cd frontend
 ```
 
-2. Install dependencies:
-```bash
-npm install
-```
 
-3. Create a `.env` file in the frontend directory:
-```env
-REACT_APP_API_URL = http://localhost:5173
-```
 
-4. Start the frontend development server:
-```bash
-npm start
-```
 
 ### Frontend Setup
 1. Navigate to frontend directory:
@@ -100,7 +80,7 @@ cd frontend
 npm install
 ```
 
-4. Start the frontend development server:
+3. Start the frontend development server:
 ```bash
 npm run dev
 ```
