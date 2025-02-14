@@ -5,7 +5,7 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 const router = Router();
 
 
-router.get('/getAllEvent', EventController.fetchAllEvents);
+router.get('/getAllEvent', EventController.getAllEvents);
 
 
 router.post('/', authMiddleware, EventController.createEvent);
