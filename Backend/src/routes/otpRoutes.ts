@@ -1,16 +1,14 @@
-// routes/otpRoutes.ts
-import { Router } from "express";
 import { OTPController } from "../controllers/otpcontroller";
+import { OTPService } from "../services/otpService";
 import { EmailService } from "../services/emailService";
+import { Router } from "express";
 
-const router = Router();
 const emailService = new EmailService();
-const otpController = new OTPController(emailService);
+const otpService = new OTPService();
+const otpController = new OTPController(otpService, emailService);
 
-// Route for sending OTP
+const router = Router()
 router.post("/send-otp", otpController.sendOTP);
-
-// Route for verifying OTP
 router.post("/verify-otp", otpController.verifyOTP);
 
 export default router;
