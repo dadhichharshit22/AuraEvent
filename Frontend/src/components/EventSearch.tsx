@@ -46,8 +46,6 @@ const EventSearch: React.FC<EventSearchProps> = ({ onSearch }) => {
   const iconClassName =
     "h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2";
 
-  
-
   return (
     <form
       onSubmit={handleSearch}
@@ -64,7 +62,6 @@ const EventSearch: React.FC<EventSearchProps> = ({ onSearch }) => {
               handleInputChange("location", e.target.value)
             }
             aria-label="Location search"
-            
           />
           <MapPin className={iconClassName} />
         </div>
@@ -89,9 +86,8 @@ const EventSearch: React.FC<EventSearchProps> = ({ onSearch }) => {
           <RefreshCw className="h-4 w-4 mr-2" />
           Reset
         </Button>
-        <Button
-          type="submit"
-        ><Search className="h-4 w-4 mr-2" />
+        <Button type="submit">
+          <Search className="h-4 w-4 mr-2" />
           Search
         </Button>
       </div>

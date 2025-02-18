@@ -3,9 +3,12 @@ import Event from "../models/Event";
 import crypto from "crypto";
 import mongoose, { Mongoose } from "mongoose";
 import { instance } from "../config/razorpay";
+import { EmailService } from "services/emailService";
 
 class PaymentService {
   // Capture payment method
+  constructor(private emailService: EmailService) {
+  }
   public static async capturePayment(req: Request, res: Response): Promise<void> {
     try {
       console.log("Request body:", req.body);
@@ -27,7 +30,7 @@ class PaymentService {
       if (event?.attendees?.includes(new Mongoose.prototype.ObjectId(userId))) {
         res
           .status(400)
-          .json({ success: false, message: "Student is already Registered." });
+          .json({ success: false, message: "User is already Registered." });
         return;
       }
 
@@ -71,6 +74,8 @@ class PaymentService {
         return;
       }
 
+    
+     
       const attendeeAdded = await this.addAttendee(eventId, userId);
       if (!attendeeAdded.success) {
         res.status(500).json(attendeeAdded);

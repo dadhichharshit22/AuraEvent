@@ -10,7 +10,7 @@ import {
 const ImageCarousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Array of images with their descriptions
+  
   const images = [
     {
       src: "https://images.pexels.com/photos/2952834/pexels-photo-2952834.jpeg?auto=compress&cs=tinysrgb&w=600",
@@ -26,13 +26,13 @@ const ImageCarousel: React.FC = () => {
     },
   ];
 
-  // Effect to change the current index every 2 seconds
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 2000); // Change slide every 2 seconds
+    }, 2000); 
 
-    return () => clearInterval(interval); // Cleanup interval on unmount
+    return () => clearInterval(interval); 
   }, [images.length]);
 
   return (

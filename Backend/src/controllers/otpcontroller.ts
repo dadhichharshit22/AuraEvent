@@ -25,6 +25,33 @@
         res.status(400).json({ message: "Email is required" });
         return;
       }
+
+       // try {
+  //   // Data to send in the request
+  //   const data = new URLSearchParams({
+  //     variables_values: otp,
+  //     route: "p",
+  //     numbers: phoneNumber
+  //   }).toString();
+
+  //   // Make the API call
+  //   const response = await axios({
+  //     method: 'post',
+  //     url: 'https://www.fast2sms.com/dev/bulkV2',
+  //     headers: {
+  //       'authorization': "FPFL2pigtHzVJuju3Z9KmRbW7LrkbJJVnRQVvMveBQ5HSD1jRZ5EEXw0titO",
+  //       'Content-Type': 'application/x-www-form-urlencoded',
+  //       'api-key': 'FPFL2pigtHzVJuju3Z9KmRbW7LrkbJJVnRQVvMveBQ5HSD1jRZ5EEXw0titO',
+  //     },
+  //     data: data
+  //   });
+  //   // console.log(response.data);
+  //   console.log('SMS sent successfully:', response.data);
+  //   res.status(200).json({ message: 'OTP sent successfully', otp });
+  // } catch (error: any) {
+  //   console.error('Error sending SMS:', error);
+  //   res.status(500).json({ message: 'Error sending OTP', error });
+  // }
   
       try {
         console.log('Generating OTP for email:', email);

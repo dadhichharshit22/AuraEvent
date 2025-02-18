@@ -110,7 +110,7 @@ class EventController {
         return;
       }
 
-      // Notify all attendees about the update
+    
       const attendeeUsers = await User.find({
         _id: { $in: event.attendees }
       });
@@ -204,7 +204,7 @@ class EventController {
     }
   };
 
-  // Other methods remain the same but with improved error handling
+  
   public deleteEvent = async (req: Request, res: Response): Promise<void> => {
     try {
       const event = await Event.findByIdAndDelete(req.params.id);

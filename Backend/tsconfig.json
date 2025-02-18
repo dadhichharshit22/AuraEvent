@@ -1,5 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src",   // Ensure baseUrl is set to your project’s root or 'src' folder
+    "paths": {
+      "@/*": ["src/*"] ,
+      "@decorators/*": ["src/decorators/*"]   // Map '@' to the 'src' directory
+    },
+   
     "outDir": "./dist",
     "rootDir": "./src",
     "module": "commonjs",

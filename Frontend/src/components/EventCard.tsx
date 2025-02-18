@@ -10,13 +10,11 @@ interface EventCardProps {
     location: string;
     category: string;
     image: string;
-    description:string;
-    type:string;
-
+    description: string;
+    type: string;
   };
   onExplore?: (eventId: string) => void;
 }
-
 
 const EventCard: React.FC<EventCardProps> = ({ event, onExplore }) => {
   // const categories = event?.category
@@ -109,7 +107,6 @@ const EventCard: React.FC<EventCardProps> = ({ event, onExplore }) => {
           </Badge>
         </div>
       </CardContent>
-     
     </Card>
   );
 };
