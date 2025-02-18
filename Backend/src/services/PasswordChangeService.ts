@@ -5,7 +5,6 @@ import { PasswordHelper } from "../utils/passwordHelper";
 import jwt from "jsonwebtoken";
 
 export interface IAuthenticationService {
-   
     changePassword(req: Request, res: Response): Promise<void>;
   }
   
