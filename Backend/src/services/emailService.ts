@@ -7,6 +7,7 @@ import {
   unregistrationEmailTemplate 
 } from "../emailTemplate/eventRegistration";
 import { newEventNotification } from "../emailTemplate/newEventNotification";
+import { paymentSuccessTemplate ,paymentFailureTemplate} from "../emailTemplate/paymentTemplates";
 
 export class EmailService {
   private transporter;
@@ -119,6 +120,44 @@ export class EmailService {
     await this.sendMail(
       email,
       "Event Updated",
+      html
+    );
+  }
+
+  async sendPaymentSuccessEmail(
+    email: string,
+    eventTitle: string,
+    amount: number,
+    transactionId: string,
+    paymentDate: string
+  ): Promise<void> {
+    const html = paymentSuccessTemplate(
+      eventTitle,
+      amount,
+      transactionId,
+      paymentDate
+    );
+    await this.sendMail(
+      email,
+      "Payment Successful",
+      html
+    );
+  }
+
+  async sendPaymentFailureEmail(
+    email: string,
+    eventTitle: string,
+    amount: number,
+    errorMessage: string
+  ): Promise<void> {
+    const html = paymentFailureTemplate(
+      eventTitle,
+      amount,
+      errorMessage
+    );
+    await this.sendMail(
+      email,
+      "Payment Failed",
       html
     );
   }

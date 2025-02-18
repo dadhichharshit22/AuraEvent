@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Mail, Lock, User, UserCircle } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
-//import { Button } from "@/components/ui/button";
 import ilus from "@/assets/illus.png";
 
 interface RegisterProps {

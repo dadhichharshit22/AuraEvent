@@ -7,11 +7,7 @@ import { toast } from "react-toastify";
 import { Mail } from "lucide-react";
 
 
-interface ForgotPasswordProps {
-    // onRegister: (token: string) => void;
-}
-
-const ForgotPassword: React.FC<ForgotPasswordProps> = () => {
+const ForgotPassword: React.FC= () => {
 
     const [email, setEmail] = useState("");
     const [otpSent, setOtpSent] = useState(false);

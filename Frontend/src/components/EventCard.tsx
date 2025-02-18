@@ -1,7 +1,5 @@
 import React from "react";
-import { CalendarDays, MapPin, ArrowRight } from "lucide-react";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
+import { Card, CardContent, CardHeader } from "./ui/card";
 import { Badge } from "./ui/badge";
 
 interface EventCardProps {
@@ -21,9 +19,9 @@ interface EventCardProps {
 
 
 const EventCard: React.FC<EventCardProps> = ({ event, onExplore }) => {
-  const categories = event?.category
-  ? event.category.split(",").map((category: string) => category.trim())
-  : [];
+  // const categories = event?.category
+  // ? event.category.split(",").map((category: string) => category.trim())
+  // : [];
   console.log(event);
 
   return (
@@ -111,12 +109,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onExplore }) => {
           </Badge>
         </div>
       </CardContent>
-      {/* <CardFooter>
-        <Button className="w-full">
-          Explore Event
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </CardFooter> */}
+     
     </Card>
   );
 };

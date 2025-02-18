@@ -7,15 +7,15 @@
   export class OTPController {
     constructor(private emailService: EmailService) {
     
-      this.send = this.send.bind(this);
-      this.verify = this.verify.bind(this);
+      this.sendOTP = this.sendOTP.bind(this);
+      this.verifyOTP = this.verifyOTP.bind(this);
     }
   
     private generateOTP(): string {
       return crypto.randomInt(100000, 999999).toString();
     }
   
-    public send = async (req: Request, res: Response): Promise<void> => {
+    public sendOTP = async (req: Request, res: Response): Promise<void> => {
       console.log('Received send OTP request:', req.body);
       
       const { email } = req.body;
@@ -54,7 +54,7 @@
     };
 
   
-  public verify = async (req: Request, res: Response): Promise<void> => {
+  public verifyOTP = async (req: Request, res: Response): Promise<void> => {
     const { email, otp } = req.body;
    console.log(req.body);
     try {

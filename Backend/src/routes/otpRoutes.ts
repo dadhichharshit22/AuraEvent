@@ -10,7 +10,7 @@ const otpController = new OTPController(emailService);
 router.post("/send-otp", async (req, res, next) => {
   try {
     console.log('OTP route hit with body:', req.body);
-    await otpController.send(req, res);
+    await otpController.sendOTP(req, res);
   } catch (error) {
     console.error('Route error:', error);
     next(error);
@@ -19,7 +19,7 @@ router.post("/send-otp", async (req, res, next) => {
 
 router.post("/verify-otp", async (req, res, next) => {
   try {
-    await otpController.verify(req, res);
+    await otpController.verifyOTP(req, res);
   } catch (error) {
     next(error);
   }

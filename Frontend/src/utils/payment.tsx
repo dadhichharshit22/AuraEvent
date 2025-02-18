@@ -14,7 +14,7 @@ function loadScript(src: string): Promise<boolean> {
     });
 }
 
-// Function to handle course purchase
+
 export async function payEventFee(
     token: string,
     eventId: string,
@@ -83,7 +83,7 @@ export async function payEventFee(
                 },
             },
             handler: (response: any) => {
-                // sendPaymentSuccessEmail(response, orderResponse.data.message.amount, token);
+              
                 verifyPayment({ ...response, eventId, userId }, token);
             },
         };

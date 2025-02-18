@@ -1,10 +1,10 @@
 import express from "express";
-import { capturePayment, verifyPayment } from "../controllers/paymentController";
+import PaymentService from "../controllers/paymentController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.post("/capturePayment", capturePayment);
-router.post("/verifyPayment", verifyPayment);
+router.post("/capturePayment", PaymentService.capturePayment);
+router.post("/verifyPayment", PaymentService.verifyPayment);
 
 export default router;

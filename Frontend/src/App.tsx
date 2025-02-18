@@ -9,7 +9,7 @@ import {
 import HomePage from "./pages/HomePage";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-//import Dashboard from "./pages/Dashboard";
+
 import EventDetails from "./pages/EventDetails";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
@@ -81,16 +81,7 @@ const App: React.FC = () => {
           searchTags.some((tag) => event.category.toLowerCase().includes(tag))
       );
     }
-
-    if (searchParams.month) {
-      filtered = filtered.filter((event) => {
-        const eventMonth = new Date(event.date)
-          .toLocaleString("default", { month: "long" })
-          .toLowerCase();
-        return eventMonth === searchParams.month.toLowerCase();
-      });
-    }
-
+    
     setFilteredEvents(filtered);
   };
 

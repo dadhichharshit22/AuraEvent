@@ -15,8 +15,7 @@ interface HomepageProps {
 }
 
 const HomePage: React.FC<HomepageProps> = ({
-  isRegistered,
-  onLogout,
+  
   filteredEvents,
   setFilteredEvents,
 }) => {
