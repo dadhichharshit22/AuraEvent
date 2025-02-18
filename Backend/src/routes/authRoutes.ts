@@ -1,14 +1,17 @@
-import { Router } from "express";
-import { authentication } from "../controllers/authController";
-import { EmailService } from "../services/emailService";
+import { Router } from 'express';
+import { AuthenticationService } from '../controllers/authController';
+import { EmailService } from '../services/emailService';
 
-const router = Router();
+// Initialize services and controllers
 const emailService = new EmailService();
-const authController = new authentication(emailService);
+const authService = new AuthenticationService(emailService);
 
+// Initialize the router
+const router = Router();
 
-router.post("/register", authController.register);
-router.post("/login", authController.login);
-router.post("/change-password",authController.changePassword);
+// Define the authentication routes
+router.post('/register', authService.register);
+router.post('/login', authService.login);
+router.post('/change-password', authService.changePassword);
 
 export default router;

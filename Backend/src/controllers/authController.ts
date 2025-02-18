@@ -10,8 +10,8 @@ interface PasswordChangeRequest {
   email: string;
 }
 
-export class authentication {
-  private readonly SALT_ROUNDS = 10;
+export class AuthenticationService {
+  private readonly SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 10;
 
   constructor(private emailService: EmailService) {}
 
@@ -26,27 +26,27 @@ export class authentication {
   }
 
   public register = async (req: Request, res: Response): Promise<void> => {
-    const { name, email, phoneNumber, password, username } = req.body;
-
-    if (!name || !email || !password || !phoneNumber || !username) {
-      this.handleErrorResponse(res, 400, "Please provide all required fields.");
-      return;
-    }
-
     try {
-      const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+      const { name, email, phoneNumber, password, username } = req.body;
+      
+      if (![name, email, password, phoneNumber, username].every(Boolean)) {
+        return this.handleErrorResponse(res, 400, "All fields are required.");
+      }
 
+      const existingUser = await User.findOne({ $or: [{ email }, { username }] });
       if (existingUser) {
-        const errorMessage =
-          existingUser.email === email ? "Email already registered." : "Username already taken.";
-        this.handleErrorResponse(res, 400, errorMessage);
-        return;
+        return this.handleErrorResponse(
+          res,
+          400,
+          existingUser.email === email ? "Email already registered." : "Username already taken."
+        );
       }
 
       const hashedPassword = await bcrypt.hash(password, this.SALT_ROUNDS);
       const profilePicture = `https://api.dicebear.com/5.x/initials/svg?seed=${name}`;
 
-      const user = await User.create({ name, email, phoneNumber, password: hashedPassword, profilePicture, username });
+      const user = new User({ name, email, phoneNumber, password: hashedPassword, profilePicture, username });
+      await user.save();
 
       const token = this.generateToken(user.id);
       await this.emailService.sendWelcomeEmail(name, email);
@@ -59,19 +59,12 @@ export class authentication {
   };
 
   public login = async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body;
-
     try {
-      const user = await User.findOne({ email });
-      if (!user) {
-        this.handleErrorResponse(res, 400, "Invalid credentials.");
-        return;
-      }
+      const { email, password } = req.body;
 
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        this.handleErrorResponse(res, 400, "Invalid credentials.");
-        return;
+      const user = await User.findOne({ email });
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        return this.handleErrorResponse(res, 400, "Invalid credentials.");
       }
 
       const token = this.generateToken(user.id);
@@ -83,27 +76,25 @@ export class authentication {
   };
 
   public changePassword = async (req: Request, res: Response): Promise<void> => {
-    const { password, confirmPassword, email }: PasswordChangeRequest = req.body;
-
-    if (password !== confirmPassword) {
-      this.handleErrorResponse(res, 400, "Passwords don't match.");
-      return;
-    }
-
     try {
-      const user = await User.findOne({ email });
-      if (!user) {
-        this.handleErrorResponse(res, 404, "User not found.");
-        return;
+      const { password, confirmPassword, email }: PasswordChangeRequest = req.body;
+
+      if (password !== confirmPassword) {
+        return this.handleErrorResponse(res, 400, "Passwords don't match.");
       }
 
-      const hashedPassword = await bcrypt.hash(password, this.SALT_ROUNDS);
-      await User.updateOne({ email }, { password: hashedPassword });
+      const user = await User.findOne({ email });
+      if (!user) {
+        return this.handleErrorResponse(res, 404, "User not found.");
+      }
+
+      user.password = await bcrypt.hash(password, this.SALT_ROUNDS);
+      await user.save();
 
       res.status(200).json({ success: true, message: "Password reset successfully." });
     } catch (error) {
       console.error("Password change error:", error);
-      this.handleErrorResponse(res, 500, "Something went wrong while resetting the password.");
+      this.handleErrorResponse(res, 500, "Error resetting password.");
     }
   };
 }

@@ -7,22 +7,10 @@ const router = Router();
 const emailService = new EmailService();
 const otpController = new OTPController(emailService);
 
-router.post("/send-otp", async (req, res, next) => {
-  try {
-    console.log('OTP route hit with body:', req.body);
-    await otpController.sendOTP(req, res);
-  } catch (error) {
-    console.error('Route error:', error);
-    next(error);
-  }
-});
+// Route for sending OTP
+router.post("/send-otp", otpController.sendOTP);
 
-router.post("/verify-otp", async (req, res, next) => {
-  try {
-    await otpController.verifyOTP(req, res);
-  } catch (error) {
-    next(error);
-  }
-});
+// Route for verifying OTP
+router.post("/verify-otp", otpController.verifyOTP);
 
 export default router;
