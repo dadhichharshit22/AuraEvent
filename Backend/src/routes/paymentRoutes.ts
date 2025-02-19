@@ -5,7 +5,7 @@ import { EmailService } from "../services/emailService";
 
 const router = express.Router();
 const emailService = new EmailService(); // Create an instance of EmailService
-const paymentService = new PaymentService(emailService); // Pass emailService to PaymentService
+const paymentService = new PaymentService(emailService); // Pass emailService into PaymentService
 
 router.post("/capturePayment", authMiddleware, paymentService.capturePayment.bind(paymentService));
 router.post("/verifyPayment", authMiddleware, paymentService.verifyPayment.bind(paymentService));

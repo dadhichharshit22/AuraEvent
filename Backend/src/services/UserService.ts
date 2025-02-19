@@ -1,6 +1,6 @@
 
 
-import User, { IUser } from '../models/User';
+import User, { IUser } from '../models/user';
 
 export class UserService {
   public static async getUserById(id: string): Promise<IUser | null> {

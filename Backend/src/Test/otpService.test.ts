@@ -1,7 +1,7 @@
 import { OTPService } from "../services/otpService";
-import OTP from "../models/OTP";
+import OTP from "../models/otp";
 
-jest.mock("../models/OTP"); // Mock OTP model
+jest.mock("../models/OTP");
 
 describe("OTPService", () => {
   let otpService: OTPService;
@@ -12,20 +12,18 @@ describe("OTPService", () => {
 
   it("should generate a 6-digit OTP", () => {
     const otp = otpService.generateOTP();
-    expect(otp).toMatch(/^\d{6}$/); // OTP should be a 6-digit number
+    expect(otp).toMatch(/^\d{6}$/);
   });
 
   it("should save OTP to the database", async () => {
     const email = "test@example.com";
     const otp = "123456";
 
-    // Mocking the OTP.deleteMany and OTP.create methods
     (OTP.deleteMany as jest.Mock).mockResolvedValueOnce({ deletedCount: 1 });
     (OTP.create as jest.Mock).mockResolvedValueOnce({ email, otp });
 
     await otpService.saveOTP(email, otp);
 
-    // Check that OTP.deleteMany and OTP.create were called with the correct arguments
     expect(OTP.deleteMany).toHaveBeenCalledWith({ email });
     expect(OTP.create).toHaveBeenCalledWith({ email, otp });
   });
@@ -34,7 +32,6 @@ describe("OTPService", () => {
     const email = "test@example.com";
     const otp = "123456";
 
-    // Mock OTP.deleteMany to simulate an error
     (OTP.deleteMany as jest.Mock).mockRejectedValueOnce(
       new Error("Database error")
     );
@@ -42,7 +39,6 @@ describe("OTPService", () => {
     try {
       await otpService.saveOTP(email, otp);
     } catch (error: unknown) {
-      // Type guard to handle the error correctly
       if (error instanceof Error) {
         expect(error.message).toBe("Database error");
       }
@@ -53,20 +49,18 @@ describe("OTPService", () => {
     const email = "test@example.com";
     const otp = "123456";
 
-    // Mock OTP.findOne to return an OTP object
     (OTP.findOne as jest.Mock).mockResolvedValueOnce({ email, otp });
 
     const result = await otpService.verifyOTP(email, otp);
 
     expect(result).toBe(true);
-    expect(OTP.deleteMany).toHaveBeenCalledWith({ email }); // OTP should be deleted after verification
+    expect(OTP.deleteMany).toHaveBeenCalledWith({ email });
   });
 
   it("should return false if OTP verification fails", async () => {
     const email = "test@example.com";
     const otp = "123456";
 
-    // Mock OTP.findOne to return null (OTP not found)
     (OTP.findOne as jest.Mock).mockResolvedValueOnce(null);
 
     const result = await otpService.verifyOTP(email, otp);
@@ -78,7 +72,6 @@ describe("OTPService", () => {
     const email = "test@example.com";
     const otp = "123456";
 
-    // Mock OTP.findOne to simulate an error
     (OTP.findOne as jest.Mock).mockRejectedValueOnce(
       new Error("Database error")
     );
@@ -86,7 +79,6 @@ describe("OTPService", () => {
     try {
       await otpService.verifyOTP(email, otp);
     } catch (error: unknown) {
-      // Type guard to handle the error correctly
       if (error instanceof Error) {
         expect(error.message).toBe("Database error");
       }

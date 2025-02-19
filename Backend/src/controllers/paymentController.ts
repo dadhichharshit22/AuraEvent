@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import EventService from "../services/findEventService";
-import PaymentGateway from "../gateways/paymentGateway";
+import EventService from "../services/eventAttendessService";
+import PaymentGateway from "../paymentGateway/paymentGateway";
 import { EmailService } from "../services/emailService";
 import crypto from "crypto";
 

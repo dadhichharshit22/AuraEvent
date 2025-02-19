@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
-import { LoginService } from "../services/LoginService"; // Adjust the import path accordingly
-import User from "../models/User";
+import { LoginService } from "../services/loginService";
+import User from "../models/user";
 import { PasswordHelper } from "../utils/passwordHelper";
 import jwt from "jsonwebtoken";
 
-// Mocking the dependencies
 jest.mock("../models/User");
 jest.mock("../utils/passwordHelper");
 jest.mock("jsonwebtoken");
@@ -37,7 +36,7 @@ describe("LoginService", () => {
 
   it("should return error if user not found", async () => {
     mockRequest.body = { email: "test@example.com", password: "password123" };
-    User.findOne = jest.fn().mockResolvedValue(null); // Mocking User.findOne to return null
+    User.findOne = jest.fn().mockResolvedValue(null);
 
     await loginService.login(mockRequest as Request, mockResponse as Response);
 
@@ -50,9 +49,13 @@ describe("LoginService", () => {
 
   it("should return error if password is invalid", async () => {
     mockRequest.body = { email: "test@example.com", password: "password123" };
-    const user = { id: "1", email: "test@example.com", password: "hashedpassword" };
-    User.findOne = jest.fn().mockResolvedValue(user); // Mocking User.findOne to return a user
-    PasswordHelper.comparePasswords = jest.fn().mockResolvedValue(false); // Mocking password check to return false
+    const user = {
+      id: "1",
+      email: "test@example.com",
+      password: "hashedpassword",
+    };
+    User.findOne = jest.fn().mockResolvedValue(user);
+    PasswordHelper.comparePasswords = jest.fn().mockResolvedValue(false);
 
     await loginService.login(mockRequest as Request, mockResponse as Response);
 
@@ -65,10 +68,14 @@ describe("LoginService", () => {
 
   it("should return token if login is successful", async () => {
     mockRequest.body = { email: "test@example.com", password: "password123" };
-    const user = { id: "1", email: "test@example.com", password: "hashedpassword" };
-    User.findOne = jest.fn().mockResolvedValue(user); // Mocking User.findOne to return a user
-    PasswordHelper.comparePasswords = jest.fn().mockResolvedValue(true); // Mocking password check to return true
-    jwt.sign = jest.fn().mockReturnValue("mocked_token"); // Mocking JWT signing
+    const user = {
+      id: "1",
+      email: "test@example.com",
+      password: "hashedpassword",
+    };
+    User.findOne = jest.fn().mockResolvedValue(user);
+    PasswordHelper.comparePasswords = jest.fn().mockResolvedValue(true);
+    jwt.sign = jest.fn().mockReturnValue("mocked_token");
 
     await loginService.login(mockRequest as Request, mockResponse as Response);
 
@@ -81,7 +88,7 @@ describe("LoginService", () => {
 
   it("should handle server errors gracefully", async () => {
     mockRequest.body = { email: "test@example.com", password: "password123" };
-    User.findOne = jest.fn().mockRejectedValue(new Error("Database error")); // Simulating a database error
+    User.findOne = jest.fn().mockRejectedValue(new Error("Database error"));
 
     await loginService.login(mockRequest as Request, mockResponse as Response);
 

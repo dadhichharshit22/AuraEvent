@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { Event } from "../models/Event";  // Changed to named import
-import User, { IUser } from "../models/User";
+import { Event } from "../models/event";  
+import User, { IUser } from "../models/user";
 import { EmailService } from "../services/emailService";
 
 interface AuthRequest extends Request {
@@ -44,7 +44,7 @@ class EventController {
 
       const savedEvent = await newEvent.save();
 
-      // Send confirmation email to event creator
+      
       if (req.user?.email) {
         await this.emailService.sendEventCreationEmail(
           req.user.email,
@@ -54,7 +54,7 @@ class EventController {
         );
       }
 
-      // Notify all users about new event
+      
       const users = await User.find();
       await Promise.all(
         users.map(user =>
@@ -109,13 +109,13 @@ class EventController {
         return;
       }
 
-      // Type the attendees to avoid 'any' type error
+  
       const attendeeUsers = await User.find({
         _id: { $in: event.attendees }
       });
 
       await Promise.all(
-        attendeeUsers.map((attendee: IUser) =>  // Defined the type for 'attendee'
+        attendeeUsers.map((attendee: IUser) =>  
           this.emailService.sendEventUpdateEmail(
             attendee.email,
             title,

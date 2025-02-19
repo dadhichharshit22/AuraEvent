@@ -1,16 +1,14 @@
 import { Request, Response } from "express";
-import { RegistrationService } from "../services/RegistrationService";
+import { RegistrationService } from "../services/registrationService";
 import { EmailService } from "../services/emailService";
 import { PasswordHelper } from "../utils/passwordHelper";
-import User from "../models/User";
+import User from "../models/user";
 import jwt from "jsonwebtoken";
 
-// Mock dependencies
 jest.mock("../models/User");
 jest.mock("../services/emailService");
 jest.mock("../utils/passwordHelper");
 
-// Mock jsonwebtoken sign method explicitly
 jest.mock("jsonwebtoken", () => ({
   sign: jest.fn(),
 }));
@@ -18,7 +16,7 @@ jest.mock("jsonwebtoken", () => ({
 describe("RegistrationService", () => {
   let registrationService: RegistrationService;
   let mockEmailService: EmailService;
-  
+
   beforeEach(() => {
     mockEmailService = new EmailService();
     registrationService = new RegistrationService(mockEmailService);
@@ -57,8 +55,9 @@ describe("RegistrationService", () => {
       json: jest.fn(),
     } as unknown as Response;
 
-    // Mock existing user
-    (User.findOne as jest.Mock).mockResolvedValueOnce({ email: "test@example.com" });
+    (User.findOne as jest.Mock).mockResolvedValueOnce({
+      email: "test@example.com",
+    });
 
     await registrationService.register(req, res);
 
@@ -84,7 +83,6 @@ describe("RegistrationService", () => {
       json: jest.fn(),
     } as unknown as Response;
 
-    // Mock existing user
     (User.findOne as jest.Mock).mockResolvedValueOnce({ username: "testuser" });
 
     await registrationService.register(req, res);
@@ -111,21 +109,22 @@ describe("RegistrationService", () => {
       json: jest.fn(),
     } as unknown as Response;
 
-    // Mock dependencies
     (User.findOne as jest.Mock).mockResolvedValueOnce(null);
-    (PasswordHelper.hashPassword as jest.Mock).mockResolvedValueOnce("hashedpassword");
+    (PasswordHelper.hashPassword as jest.Mock).mockResolvedValueOnce(
+      "hashedpassword"
+    );
     (User.create as jest.Mock).mockResolvedValueOnce({
       id: "1234",
       name: "Test User",
       email: "unique@example.com",
       username: "testuser",
     });
-    
-    // Mock JWT sign method to return a token
+
     (jwt.sign as jest.Mock).mockReturnValue("token");
 
-    // Mock email service method
-    (mockEmailService.sendWelcomeEmail as jest.Mock).mockResolvedValueOnce(undefined);
+    (mockEmailService.sendWelcomeEmail as jest.Mock).mockResolvedValueOnce(
+      undefined
+    );
 
     await registrationService.register(req, res);
 
@@ -134,7 +133,10 @@ describe("RegistrationService", () => {
       success: true,
       token: "token",
     });
-    expect(mockEmailService.sendWelcomeEmail).toHaveBeenCalledWith("Test User", "unique@example.com");
+    expect(mockEmailService.sendWelcomeEmail).toHaveBeenCalledWith(
+      "Test User",
+      "unique@example.com"
+    );
   });
 
   it("should handle server errors during registration", async () => {
@@ -152,8 +154,9 @@ describe("RegistrationService", () => {
       json: jest.fn(),
     } as unknown as Response;
 
-    // Mock to throw error during user creation
-    (User.create as jest.Mock).mockRejectedValueOnce(new Error("Database error"));
+    (User.create as jest.Mock).mockRejectedValueOnce(
+      new Error("Database error")
+    );
 
     await registrationService.register(req, res);
 

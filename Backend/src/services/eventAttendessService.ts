@@ -1,4 +1,4 @@
-import { Event } from "../models/Event";  
+import { Event } from "../models/event";  
 import mongoose from "mongoose";
 
 class EventService {
