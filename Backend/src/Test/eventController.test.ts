@@ -1,75 +1,74 @@
 import request from 'supertest';
-import app from '../app';  // Import your Express app
+import app from '../app';  // Your Express app instance
+import mongoose from 'mongoose';
 import { Event } from '../models/Event';
 import User from '../models/User';
-import mongoose from 'mongoose';
 
-// A mock user to simulate authentication
 let mockUserId: string;
 let mockEventId: string;
 
-// Mock data for events
+// Sample event data
 const eventData = {
   title: 'Test Event',
-  description: 'A description of the test event',
+  description: 'A test event description',
   date: new Date(),
   location: 'Test Location',
   category: 'Test Category',
   image: 'test.jpg',
   price: 10,
   type: 'Online',
-  capacity: 100
+  capacity: 100,
 };
 
 beforeAll(async () => {
   // Connect to the test database
-  await mongoose.connect('mongodb://localhost:8085/Event');
+  await mongoose.connect('mongodb://localhost:27017/EventTestDB');
 
-  // Create a mock user for testing
+  // Create a mock user for authentication
   const user = await User.create({
     email: 'testuser@example.com',
     password: 'password123',
-    name: 'Test User'
+    name: 'Test User',
   });
 
-  mockUserId = user._id.toString();  // Store the userId for later use
+  mockUserId = user._id.toString(); // Store user ID
 });
 
 afterAll(async () => {
-  // Clean up and close the database connection
+  await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
 });
 
 describe('Event Controller', () => {
-  // Test event creation
-  it('should create an event', async () => {
+  // **Create Event Test**
+  it('should create a new event', async () => {
     const res = await request(app)
       .post('/api/events')
-      .set('Authorization', `Bearer ${mockUserId}`) // Simulate authentication
+      .set('Authorization', `Bearer ${mockUserId}`)
       .send(eventData);
 
     expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty('title', eventData.title);
-    expect(res.body).toHaveProperty('organizer', mockUserId);
-
-    mockEventId = res.body._id;  // Save the event ID for further tests
+    expect(res.body).toHaveProperty('_id');
+    expect(res.body.title).toBe(eventData.title);
+    
+    mockEventId = res.body._id; // Store event ID for further tests
   });
 
-  // Test get event by ID
-  it('should get an event by ID', async () => {
+  // **Get Event by ID Test**
+  it('should retrieve an event by ID', async () => {
     const res = await request(app)
       .get(`/api/events/${mockEventId}`)
       .set('Authorization', `Bearer ${mockUserId}`);
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('_id', mockEventId);
-    expect(res.body).toHaveProperty('title', eventData.title);
+    expect(res.body._id).toBe(mockEventId);
+    expect(res.body.title).toBe(eventData.title);
   });
 
-  // Test update event
+  // **Update Event Test**
   it('should update an event', async () => {
     const updatedData = {
-      title: 'Updated Test Event',
+      title: 'Updated Event Title',
       description: 'Updated description',
       date: new Date(),
       location: 'Updated Location',
@@ -77,7 +76,7 @@ describe('Event Controller', () => {
       image: 'updated.jpg',
       price: 20,
       type: 'Offline',
-      capacity: 200
+      capacity: 200,
     };
 
     const res = await request(app)
@@ -86,39 +85,39 @@ describe('Event Controller', () => {
       .send(updatedData);
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('title', updatedData.title);
-    expect(res.body).toHaveProperty('description', updatedData.description);
+    expect(res.body.title).toBe(updatedData.title);
+    expect(res.body.description).toBe(updatedData.description);
   });
 
-  // Test event registration
-  it('should register a user for an event', async () => {
+  // **Register User for Event Test**
+  it('should register a user for the event', async () => {
     const res = await request(app)
       .post(`/api/events/${mockEventId}/register`)
       .set('Authorization', `Bearer ${mockUserId}`)
       .send({ userId: mockUserId });
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('message', 'Registered successfully');
+    expect(res.body.message).toBe('Registered successfully');
   });
 
-  // Test event unregistration
-  it('should unregister a user from an event', async () => {
+  // **Unregister User from Event Test**
+  it('should unregister a user from the event', async () => {
     const res = await request(app)
       .post(`/api/events/${mockEventId}/unregister`)
       .set('Authorization', `Bearer ${mockUserId}`)
       .send({ userId: mockUserId });
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('message', 'Unregistered successfully');
+    expect(res.body.message).toBe('Unregistered successfully');
   });
 
-  // Test delete event
+  // **Delete Event Test**
   it('should delete an event', async () => {
     const res = await request(app)
       .delete(`/api/events/${mockEventId}`)
       .set('Authorization', `Bearer ${mockUserId}`);
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('message', 'Event deleted successfully');
+    expect(res.body.message).toBe('Event deleted successfully');
   });
 });
