@@ -1,14 +1,13 @@
-// routes/paymentRoutes.ts
 import express from "express";
 import PaymentService from "../controllers/paymentController";
 import { authMiddleware } from "../middlewares/authMiddleware";
+import { EmailService } from "../services/emailService";
 
 const router = express.Router();
+const emailService = new EmailService(); // Create an instance of EmailService
+const paymentService = new PaymentService(emailService); // Pass emailService to PaymentService
 
-// Route for capturing payment
-router.post("/capture-payment", authMiddleware, PaymentService.capturePayment);
-
-// Route for verifying payment
-router.post("/verify-payment", authMiddleware, PaymentService.verifyPayment);
+router.post("/capturePayment", authMiddleware, paymentService.capturePayment.bind(paymentService));
+router.post("/verifyPayment", authMiddleware, paymentService.verifyPayment.bind(paymentService));
 
 export default router;
