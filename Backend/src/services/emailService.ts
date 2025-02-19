@@ -124,7 +124,7 @@ export class EmailService {
     );
   }
 
-  async sendPaymentConfirmation(
+  async sendPaymentSuccessEmail(
     email: string,
     eventTitle: string,
     amount: number,

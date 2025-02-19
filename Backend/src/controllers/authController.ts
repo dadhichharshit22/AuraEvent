@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { RegistrationService } from "../services/RegistrationService";
+import { RegistrationService } from "../services/RegistrationService"
 import { LoginService } from "../services/LoginService";
 import { PasswordChangeService } from "../services/PasswordChangeService";
 

@@ -1,6 +1,5 @@
-
 import { Request, Response } from "express";
-import Event from "../models/Event";
+import { Event } from "../models/Event";  // Changed to named import
 import User, { IUser } from "../models/User";
 import { EmailService } from "../services/emailService";
 
@@ -110,20 +109,20 @@ class EventController {
         return;
       }
 
-    
+      // Type the attendees to avoid 'any' type error
       const attendeeUsers = await User.find({
         _id: { $in: event.attendees }
       });
 
       await Promise.all(
-        attendeeUsers.map(user =>
+        attendeeUsers.map((attendee: IUser) =>  // Defined the type for 'attendee'
           this.emailService.sendEventUpdateEmail(
-            user.email,
+            attendee.email,
             title,
             date.toString(),
             description
           ).catch(error => 
-            console.error(`Failed to send update notification to ${user.email}:`, error)
+            console.error(`Failed to send update notification to ${attendee.email}:`, error)
           )
         )
       );
@@ -204,7 +203,6 @@ class EventController {
     }
   };
 
-  
   public deleteEvent = async (req: Request, res: Response): Promise<void> => {
     try {
       const event = await Event.findByIdAndDelete(req.params.id);

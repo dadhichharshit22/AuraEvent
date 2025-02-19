@@ -1,30 +1,25 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-// Define the IUser interface for type safety
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  profilePicture?: string; // Optional field
+  profilePicture?: string;
   username: string;
   role: string;
-  phoneNumber: string;  // Changed to string to avoid issues with leading zeros and long numbers
+  phoneNumber: Number;
   createdAt: Date;
 }
 
-// Define the schema for the User model
-const UserSchema: Schema<IUser> = new Schema({
+const UserSchema: Schema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  profilePicture: { type: String },  // Optional field
+  profilePicture: { type: String },
   username: { type: String, unique: true, required: true },
-  phoneNumber: { type: String, required: true }, // Changed to String
+  phoneNumber: { type: Number, required: true },
   role: { type: String, default: 'attendee' },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now, index: { expires: "10m" } },
 });
 
-// Create the model from the schema
-const User = mongoose.model<IUser>('User', UserSchema);
-
-export default User;
+export default mongoose.model<IUser>('User', UserSchema);

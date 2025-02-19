@@ -1,3 +1,4 @@
+// otpService.ts
 import OTP from "../models/OTP";
 import crypto from "crypto";
 
