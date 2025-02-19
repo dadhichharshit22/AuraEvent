@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '../app';  // Your Express app instance
+import app from '../app'; 
 import mongoose from 'mongoose';
 import { Event } from '../models/Event';
 import User from '../models/User';
@@ -7,7 +7,7 @@ import User from '../models/User';
 let mockUserId: string;
 let mockEventId: string;
 
-// Sample event data
+
 const eventData = {
   title: 'Test Event',
   description: 'A test event description',
@@ -21,17 +21,16 @@ const eventData = {
 };
 
 beforeAll(async () => {
-  // Connect to the test database
   await mongoose.connect('mongodb://localhost:27017/EventTestDB');
 
-  // Create a mock user for authentication
+
   const user = await User.create({
     email: 'testuser@example.com',
     password: 'password123',
     name: 'Test User',
   });
 
-  mockUserId = user._id.toString(); // Store user ID
+  mockUserId = user._id.toString(); 
 });
 
 afterAll(async () => {
@@ -40,7 +39,7 @@ afterAll(async () => {
 });
 
 describe('Event Controller', () => {
-  // **Create Event Test**
+  
   it('should create a new event', async () => {
     const res = await request(app)
       .post('/api/events')
@@ -51,10 +50,10 @@ describe('Event Controller', () => {
     expect(res.body).toHaveProperty('_id');
     expect(res.body.title).toBe(eventData.title);
     
-    mockEventId = res.body._id; // Store event ID for further tests
+    mockEventId = res.body._id; 
   });
 
-  // **Get Event by ID Test**
+  
   it('should retrieve an event by ID', async () => {
     const res = await request(app)
       .get(`/api/events/${mockEventId}`)
@@ -65,7 +64,7 @@ describe('Event Controller', () => {
     expect(res.body.title).toBe(eventData.title);
   });
 
-  // **Update Event Test**
+  
   it('should update an event', async () => {
     const updatedData = {
       title: 'Updated Event Title',
@@ -89,7 +88,7 @@ describe('Event Controller', () => {
     expect(res.body.description).toBe(updatedData.description);
   });
 
-  // **Register User for Event Test**
+  
   it('should register a user for the event', async () => {
     const res = await request(app)
       .post(`/api/events/${mockEventId}/register`)
@@ -100,7 +99,7 @@ describe('Event Controller', () => {
     expect(res.body.message).toBe('Registered successfully');
   });
 
-  // **Unregister User from Event Test**
+  
   it('should unregister a user from the event', async () => {
     const res = await request(app)
       .post(`/api/events/${mockEventId}/unregister`)
@@ -111,7 +110,7 @@ describe('Event Controller', () => {
     expect(res.body.message).toBe('Unregistered successfully');
   });
 
-  // **Delete Event Test**
+  
   it('should delete an event', async () => {
     const res = await request(app)
       .delete(`/api/events/${mockEventId}`)

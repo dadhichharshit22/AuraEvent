@@ -25,7 +25,7 @@ export class OTPController {
       await this.otpService.saveOTP(email, otp);
       await this.emailService.sendOTPEmail(email, otp);
       res.status(200).json({ message: "OTP sent successfully" });
-    } catch (error) {
+    } catch (error:unknown) {
       console.error('Error in send OTP:', error);
       res.status(500).json({
         message: "Error sending OTP",

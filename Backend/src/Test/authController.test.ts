@@ -5,7 +5,7 @@ import { RegistrationService } from "../services/RegistrationService";
 import { LoginService } from "../services/LoginService";
 import { PasswordChangeService } from "../services/PasswordChangeService";
 
-// Mock service instances
+
 const mockRegistrationService = {
   register: jest.fn((req: Request, res: Response) => res.status(201).json({ message: "User registered" }))
 };
@@ -18,14 +18,14 @@ const mockPasswordChangeService = {
   changePassword: jest.fn((req: Request, res: Response) => res.status(200).json({ message: "Password changed" }))
 };
 
-// Initialize Controller with mocks
+
 const authController = new AuthenticationController(
   mockRegistrationService as unknown as RegistrationService,
   mockLoginService as unknown as LoginService,
   mockPasswordChangeService as unknown as PasswordChangeService
 );
 
-// Create an Express app with routes
+
 const app = express();
 app.use(express.json());
 

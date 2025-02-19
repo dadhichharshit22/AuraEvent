@@ -28,7 +28,7 @@ app.use((req, res, next) => {
   console.log('Body:', req.body);
   next();
 });
-// Routes
+
 app.use('/api/otp', otpRoutes);  
 app.use('/api/auth', authRoutes);
 app.use('/api/pay', paymentRoutes);

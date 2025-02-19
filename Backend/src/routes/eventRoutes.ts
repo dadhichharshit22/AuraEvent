@@ -4,19 +4,21 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 
 const router = Router();
 
-// Public routes
-router.get('/events', EventController.getAllEvents); // List all events
 
-// Protected routes (authMiddleware ensures the user is authenticated)
-router.post('/', authMiddleware, EventController.createEvent); // Create a new event
-router.get('/created', authMiddleware, EventController.getCreatedEvents); // Get events created by the user
-router.get('/registered', authMiddleware, EventController.getRegisteredEvents); // Get events registered by the user
+router.get('/getAllEvent', EventController.getAllEvents);
 
-router.get('/:id', authMiddleware, EventController.getEventById); // Get event by ID
-router.put('/:id', authMiddleware, EventController.updateEvent); // Update an event by ID
-router.delete('/:id', authMiddleware, EventController.deleteEvent); // Delete event by ID
 
-router.post('/:id/register', authMiddleware, EventController.registerEvent); // Register for an event
-router.post('/:id/unregister', authMiddleware, EventController.unregisterEvent); // Unregister from an event
+router.post('/', authMiddleware, EventController.createEvent);
+router.get('/created', authMiddleware, EventController.getCreatedEvents);
+router.get('/registered', authMiddleware, EventController.getRegisteredEvents);
+
+
+router.get('/:id', authMiddleware, EventController.getEventById);
+router.put('/:id', authMiddleware, EventController.updateEvent);
+router.delete('/:id', authMiddleware, EventController.deleteEvent);
+router.post('/:id/register', authMiddleware, EventController.registerEvent);
+router.post('/:id/unregister', authMiddleware, EventController.unregisterEvent);
+
+router.get('/', authMiddleware, EventController.getAllEvents);
 
 export default router;

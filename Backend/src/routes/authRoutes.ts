@@ -1,17 +1,28 @@
-import { Router } from 'express';
-import { AuthenticationService } from '../controllers/authController';
-import { EmailService } from '../services/emailService';
+import { Router } from "express";
+import { AuthenticationController } from "../controllers/authController";
+import { EmailService } from "../services/emailService";
+import { RegistrationService } from "../services/RegistrationService";
+import { LoginService } from "../services/LoginService";
+import { PasswordChangeService } from "../services/PasswordChangeService";
 
-// Initialize services and controllers
+// Initialize the required services
 const emailService = new EmailService();
-const authService = new AuthenticationService(emailService);
+const registrationService = new RegistrationService(emailService);
+const loginService = new LoginService();
+const passwordChangeService = new PasswordChangeService();
 
-// Initialize the router
+// Initialize the AuthenticationController with the services
+const authController = new AuthenticationController(
+  registrationService,
+  loginService,
+  passwordChangeService
+);
+
+// Create the router and define routes
 const router = Router();
 
-// Define the authentication routes
-router.post('/register', authService.register);
-router.post('/login', authService.login);
-router.post('/change-password', authService.changePassword);
+router.post("/register", (req, res) => authController.register(req, res));
+router.post("/login", (req, res) => authController.login(req, res));
+router.post("/change-password", (req, res) => authController.changePassword(req, res));
 
 export default router;
