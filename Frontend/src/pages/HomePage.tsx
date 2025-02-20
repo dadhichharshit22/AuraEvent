@@ -1,10 +1,11 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import EventCard from "../components/EventCard";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 import ImageCarousel from "../components/ImageCarousal";
-import EventCard from "../components/EventCard";
-import { useEventData } from "../hooks/useEventData";
 
 interface HomepageProps {
   isRegistered: boolean;
@@ -13,9 +14,28 @@ interface HomepageProps {
   setFilteredEvents: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-const HomePage: React.FC<HomepageProps> = ({ filteredEvents, setFilteredEvents }) => {
+const HomePage: React.FC<HomepageProps> = ({
+  
+  filteredEvents,
+  setFilteredEvents,
+}) => {
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { events, loading, error } = useEventData(setFilteredEvents);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8085/api/events/getAllEvent")
+      .then((response) => {
+        setEvents(response.data);
+        setFilteredEvents(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching all events:", error);
+        setLoading(false);
+      });
+  }, [setFilteredEvents]);
 
   const handleExplore = (eventId: string) => {
     const token = localStorage.getItem("token");
@@ -30,14 +50,6 @@ const HomePage: React.FC<HomepageProps> = ({ filteredEvents, setFilteredEvents }
     return (
       <div className="min-h-screen bg-custom-purple flex justify-center items-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-white"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-        <p className="text-red-500">{error}</p>
       </div>
     );
   }
@@ -57,11 +69,16 @@ const HomePage: React.FC<HomepageProps> = ({ filteredEvents, setFilteredEvents }
           </div>
           {(filteredEvents.length > 0 ? filteredEvents : events).length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {(filteredEvents.length > 0 ? filteredEvents : events).map((event) => (
-                <div key={event._id} className="transform transition-all duration-300 hover:-translate-y-2">
-                  <EventCard event={event} onExplore={handleExplore} />
-                </div>
-              ))}
+              {(filteredEvents.length > 0 ? filteredEvents : events).map(
+                (event) => (
+                  <div
+                    key={event._id}
+                    className="transform transition-all duration-300 hover:-translate-y-2"
+                  >
+                    <EventCard event={event} onExplore={handleExplore} />
+                  </div>
+                )
+              )}
             </div>
           ) : (
             <div className="text-center py-16 bg-white shadow-sm">
