@@ -2,10 +2,10 @@ import "react-toastify/dist/ReactToastify.css";
 import React from "react";
 import { Mail } from "lucide-react";
 import ilus from "@/assets/illus.png";
-import { useAuth } from "../hooks/useForgotPassword";
+import { useForgotPassword } from "../hooks/useForgotPassword";
 
 const ForgotPassword: React.FC = () => {
-  const { email, setEmail, otp, setOtp, otpSent, handleSendOTP, handleVerifyOTP } = useAuth();
+  const { email, setEmail, otp, setOtp, otpSent, handleSendOTP, handleVerifyOTP } = useForgotPassword();
 
   return (
     <div className="flex gap-2 justify-between h-screen text-black">

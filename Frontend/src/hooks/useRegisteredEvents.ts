@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Event } from '../types/Event';
 import { EventService } from '../api/registredEventApi';
 
-export const useEvents = () => {
+export const useRegisteredEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

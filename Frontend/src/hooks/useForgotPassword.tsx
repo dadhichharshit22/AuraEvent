@@ -1,10 +1,10 @@
-// src/hooks/useAuth.ts
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { sendOTP, verifyOTP } from "../api/forgotPassword";
 
-export const useAuth = () => {
+export const useForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);

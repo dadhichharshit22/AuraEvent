@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import EventCard from "./EventCard";
-import { fetchEvents, deleteEvent } from "../api/manageEventApi";
+import EventService from "../api/manageEventApi";
 
 interface Event {
   _id: string;
@@ -34,7 +34,7 @@ const ManageEvents: React.FC = () => {
   const loadEvents = async () => {
     setIsLoading(true);
     try {
-      const eventData = await fetchEvents();
+      const eventData = await EventService.fetchCreatedEvents();
       setEvents(eventData);
     } catch (error) {
       toast.error(error.message);
@@ -48,7 +48,7 @@ const ManageEvents: React.FC = () => {
   const handleDelete = async () => {
     if (!selectedEventId) return;
     try {
-      await deleteEvent(selectedEventId);
+      await EventService.deleteEvent(selectedEventId);
       setEvents(events.filter((event) => event._id !== selectedEventId));
       toast.success("Event deleted successfully");
       setShowDeleteModal(false);

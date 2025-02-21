@@ -1,17 +1,15 @@
-import EventService from "../services/eventAttendessService";
+import EventService from "../services/eventAttendee";
 import mongoose from "mongoose";
-import { Event } from "../models/event";
+import { Event } from "../models/Event";
 
 jest.mock("../models/Event");
-jest.mock("mongoose", () => ({
-  ...jest.requireActual("mongoose"),
-  Types: {
-    ...jest.requireActual("mongoose").Types,
-    ObjectId: jest.fn(
-      () => new mongoose.Types.ObjectId("507f1f77bcf86cd799439011")
-    ),
-  },
+jest.mock('mongoose', () => ({
+  ...jest.requireActual('mongoose'),
+  model: jest.fn().mockReturnValue({
+    findOne: jest.fn().mockResolvedValue({ /* mock object */ }),
+  }),
 }));
+
 
 describe("EventService", () => {
   describe("isUserRegistered", () => {

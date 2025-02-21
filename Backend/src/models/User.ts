@@ -22,5 +22,4 @@ const UserSchema: Schema = new Schema({
   createdAt: { type: Date, default: Date.now, index: { expires: "10m" } },
 });
 
-const User = mongoose.model<IUser>('User', UserSchema);
-export default User;
+export default mongoose.model<IUser>('User', UserSchema);

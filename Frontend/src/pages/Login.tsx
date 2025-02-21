@@ -1,7 +1,7 @@
 import React from 'react';
 import { LoginCredentials } from '../types/Login';
-import { useAuth } from '../hooks/useLogin';
-import { useForm } from '../hooks/useLoginForm';
+import { useLogin } from '../hooks/useLogin';
+import { useLoginForm } from '../hooks/useLoginForm';
 import { LoginForm } from '../components/LoginForm';
 import ilus from '@/assets/illus.png';
 
@@ -10,8 +10,8 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const { login, isLoading } = useAuth(onLogin);
-  const { values, handleChange, handleSubmit } = useForm<LoginCredentials>({
+  const { login, isLoading } = useLogin(onLogin);
+  const { values, handleChange, handleSubmit } = useLoginForm<LoginCredentials>({
     initialValues: { email: '', password: '' },
     onSubmit: login,
   });

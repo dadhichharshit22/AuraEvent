@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { LoginCredentials } from '../types/Login';
 import { AuthService } from '../api/LoginApi';
 
-export const useAuth = (onLoginSuccess: (token: string) => void) => {
+export const useLogin = (onLoginSuccess: (token: string) => void) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 

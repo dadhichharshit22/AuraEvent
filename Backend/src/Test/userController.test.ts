@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
 import { getUserProfile } from "../controllers/userController";
-import { UserService } from "../services/userService";
+import { UserService } from "../services/UserService";
 
 jest.mock("../services/UserService");
 

@@ -5,7 +5,7 @@ interface UseFormProps<T> {
   onSubmit: (values: T) => Promise<void>;
 }
 
-export const useForm = <T extends object>({ initialValues, onSubmit }: UseFormProps<T>) => {
+export const useLoginForm = <T extends object>({ initialValues, onSubmit }: UseFormProps<T>) => {
   const [values, setValues] = useState<T>(initialValues);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

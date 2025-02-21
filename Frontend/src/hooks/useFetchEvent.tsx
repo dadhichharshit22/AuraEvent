@@ -1,8 +1,8 @@
-// src/hooks/useEvents.ts
+
 import { useState, useEffect } from "react";
 import { getAllEvents } from "../api/homepageAPI";
 
-export const useEvents = (setFilteredEvents: (events: any[]) => void) => {
+export const useFetchEvents = (setFilteredEvents: (events: any[]) => void) => {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

@@ -1,9 +1,9 @@
 import request from "supertest";
 import express, { Request, Response } from "express";
 import { AuthenticationController } from "../controllers/authController";
-import { RegistrationService } from "../services/registrationService";
-import { LoginService } from "../services/loginService";
-import { PasswordChangeService } from "../services/passwordChangeService";
+import { RegistrationService } from "../services/RegistrationService";
+import { LoginService } from "../services/LoginService";
+import { PasswordChangeService } from "../services/PasswordChangeService";
 
 const mockRegistrationService = {
   register: jest.fn((req: Request, res: Response) =>

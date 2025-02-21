@@ -1,8 +1,8 @@
 import request from "supertest";
 import express from "express";
 import PaymentService from "../controllers/paymentController";
-import EventService from "../services/eventAttendessService";
-import PaymentGateway from "../paymentGateway/paymentGateway";
+import EventService from "../services/eventAttendee";
+import PaymentGateway from "../paymentGateways/paymentGateway";
 import { EmailService } from "../services/emailService";
 
 const app = express();

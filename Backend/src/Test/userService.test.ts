@@ -1,7 +1,9 @@
-import { UserService } from "../services/userService";
-import User from "../models/user";
+import { UserService } from "../services/UserService";
+import User from "../models/User";
 
-jest.mock("../models/User");
+jest.mock("../models/User", () => ({
+  findById: jest.fn(),
+}));
 
 describe("UserService", () => {
   it("should return a user when the user exists", async () => {

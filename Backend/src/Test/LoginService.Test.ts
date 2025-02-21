@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { LoginService } from "../services/loginService";
-import User from "../models/user";
+import { LoginService } from "../services/LoginService";
+import User from "../models/User";
 import { PasswordHelper } from "../utils/passwordHelper";
 import jwt from "jsonwebtoken";
 

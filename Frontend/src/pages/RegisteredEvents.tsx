@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { LoadingSpinner } from '../components/common/LoadingSpinnerForRegisteredEvent';
 import { EventCard } from '../components/events/EventCardForRegistered';
 import { EmptyEventState } from '../components/events/EmptyEventState';
-import { useEvents } from '../hooks/useRegisteredEvents';
+import { useRegisteredEvents } from '../hooks/useRegisteredEvents';
 
 const RegisteredEventsPage: React.FC = () => {
-  const { events, loading, error } = useEvents();
+  const { events, loading, error } = useRegisteredEvents();
   const navigate = useNavigate();
 
   if (loading) {

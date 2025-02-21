@@ -1,5 +1,5 @@
 import { OTPService } from "../services/otpService";
-import OTP from "../models/otp";
+import OTP from "../models/OTP";
 
 jest.mock("../models/OTP");
 

@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import EventCard from "@/components/EventCard";
 import ImageCarousel from "@/components/ImageCarousal";
-import { useEvents } from "../hooks/useFetchEvent";
+import { useFetchEvents } from "../hooks/useFetchEvent";
 
 interface HomepageProps {
   filteredEvents: any[];
@@ -11,7 +11,7 @@ interface HomepageProps {
 }
 
 const HomePage: React.FC<HomepageProps> = ({ filteredEvents, setFilteredEvents }) => {
-  const { events, loading } = useEvents(setFilteredEvents);
+  const { events, loading } = useFetchEvents(setFilteredEvents);
   const navigate = useNavigate();
 
   const handleExplore = (eventId: string) => {

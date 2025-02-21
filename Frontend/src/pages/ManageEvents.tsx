@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { fetchEvents, deleteEvent } from "../api/manageEventApi";
+import EventService from '../api/manageEventApi';
 import { Event } from "@/types/Event";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +21,7 @@ const ManageEvents: React.FC = () => {
     (async () => {
       try {
         setIsLoading(true);
-        const data = await fetchEvents();
+        const data = await EventService.fetchCreatedEvents();
         setEvents(data);
       } catch (error) {
         toast.error(error.message);
@@ -36,7 +36,7 @@ const ManageEvents: React.FC = () => {
   const confirmDelete = async () => {
     if (!selectedEventId) return;
     try {
-      await deleteEvent(selectedEventId);
+      await EventService.deleteEvent(selectedEventId);
       setEvents(events.filter(event => event._id !== selectedEventId));
       toast.success("Event deleted successfully");
     } catch (error) {

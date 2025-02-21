@@ -1,5 +1,5 @@
-import { PasswordChangeService } from "../services/passwordChangeService";
-import User from "../models/user";
+import { PasswordChangeService } from "../services/PasswordChangeService";
+import User from "../models/User";
 import { PasswordHelper } from "../utils/passwordHelper";
 import { Request, Response } from "express";
 

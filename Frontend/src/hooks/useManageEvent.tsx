@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { Event } from '../types/Event';
-import { EventService } from '../api/manageEventApi';
+import EventService from '../api/manageEventApi';
 
 export const useEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     setIsLoading(true);
     try {
       const fetchedEvents = await EventService.fetchCreatedEvents();
@@ -18,12 +19,12 @@ export const useEvents = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const deleteEvent = async (eventId: string) => {
+  const handleDeleteEvent = async (eventId: string) => {
     try {
       await EventService.deleteEvent(eventId);
-      setEvents(events.filter((event) => event._id !== eventId));
+      setEvents((prevEvents) => prevEvents.filter((event) => event._id !== eventId));
       toast.success('Event deleted successfully');
       return true;
     } catch (error) {
@@ -35,7 +36,7 @@ export const useEvents = () => {
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [fetchEvents]);
 
-  return { events, isLoading, deleteEvent };
+  return { events, isLoading, deleteEvent: handleDeleteEvent, fetchEvents };
 };
