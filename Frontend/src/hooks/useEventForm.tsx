@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
-import { eventService } from "../api/eventApi";
+import { eventService } from "../apiServices/EventAPI";
 
 interface EventFormData {
   title: string;

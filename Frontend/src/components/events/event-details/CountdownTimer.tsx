@@ -1,5 +1,5 @@
 import React from "react";
-import type { TimeLeft } from "../../types/Event";
+import type { TimeLeft } from "../../../types/Event";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock } from "lucide-react";
 

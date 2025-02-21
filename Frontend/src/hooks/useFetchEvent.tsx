@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { getAllEvents } from "../api/homepageAPI";
+import { getAllEvents } from "../apiServices/HomePageAPI";
 
 export const useFetchEvents = (setFilteredEvents: (events: any[]) => void) => {
   const [events, setEvents] = useState<any[]>([]);

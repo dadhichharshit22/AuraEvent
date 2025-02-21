@@ -4,11 +4,11 @@ import { ArrowLeft, Calendar, MapPin, ImageIcon, Info, Plus } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { EventBasicInfo } from "../components/event-creation/EventBasicInfo";
-import { EventDateTime } from "../components/event-creation/EventDateTime";
-import { EventLocation } from "../components/event-creation/EventLocation";
-import { EventDetails } from "../components/event-creation/EventDetails";
-import { EventImage } from "../components/event-creation/EventImage";
+import { EventBasicInfo } from "../components/events/event-creation/EventBasicInfo";
+import { EventDateTime } from "../components/events/event-creation/EventDateTime";
+import { EventLocation } from "../components/events/event-creation/EventLocation";
+import { EventDetails } from "../components/events/event-creation/EventDetails";
+import { EventImage } from "../components/events/event-creation/EventImage";
 import { useEventForm } from "../hooks/useEventForm";
 
 const CreateEvent: React.FC = () => {

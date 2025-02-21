@@ -1,17 +1,19 @@
+// models/Event.ts
 import { Schema, model, Document } from 'mongoose';
 import mongoose from 'mongoose';
-export interface IEvent extends Document {
+
+interface IEvent extends Document {
   title: string;
   description: string;
   date: Date;
   location: string;
   category: string;
   image: string;
-  organizer: Schema.Types.ObjectId;
+  organizer: mongoose.Types.ObjectId;
   type: string;
   capacity: Number;
   price: number;
-  attendees: Schema.Types.ObjectId[];
+  attendees: mongoose.Types.ObjectId[];
 }
 
 const eventSchema = new Schema<IEvent>({
@@ -28,4 +30,5 @@ const eventSchema = new Schema<IEvent>({
   attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 });
 
+export { IEvent };  // Export the interface
 export const Event = mongoose.model<IEvent>('Event', eventSchema);

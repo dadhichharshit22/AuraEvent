@@ -2,7 +2,7 @@ import React from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import EventCard from "@/components/EventCard";
-import ImageCarousel from "@/components/ImageCarousal";
+import ImageCarousel from "@/components/common/ImageCarousal";
 import { useFetchEvents } from "../hooks/useFetchEvent";
 
 interface HomepageProps {

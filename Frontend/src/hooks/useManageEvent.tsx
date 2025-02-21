@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { Event } from '../types/Event';
-import EventService from '../api/manageEventApi';
+import EventService from '../apiServices/ManageEventAPI';
 
 export const useEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { LoginCredentials } from '../types/Login';
-import { AuthService } from '../api/LoginApi';
+import { LoginCredentials } from '../types/LoginData';
+import { AuthService } from '../apiServices/LoginAPI';
 
 export const useLogin = (onLoginSuccess: (token: string) => void) => {
   const navigate = useNavigate();

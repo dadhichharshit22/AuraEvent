@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { InputField } from './InputFieldLogin';
-import { LoginCredentials } from '../types/Login';
+import { InputField } from '../common/InputFieldLogin';
+import { LoginCredentials } from '../../types/LoginData';
 
 interface LoginFormProps {
   values: LoginCredentials;

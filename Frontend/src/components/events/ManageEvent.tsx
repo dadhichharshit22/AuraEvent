@@ -5,8 +5,8 @@ import { Plus, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import EventCard from "./EventCard";
-import EventService from "../api/manageEventApi";
+import EventCard from "../EventCard";
+import EventService from "../../apiServices/ManageEventAPI";
 
 interface Event {
   _id: string;

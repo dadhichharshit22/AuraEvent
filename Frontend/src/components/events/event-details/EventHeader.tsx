@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
-
+import React from 'react'
 interface EventHeaderProps {
   onBack: () => void;
   imageUrl: string;
   title: string;
 }
 
-export const EventHeader: React.FC<EventHeaderProps> = ({ onBack, imageUrl, title }) => (
+const EventHeader: React.FC<EventHeaderProps> = ({ onBack, imageUrl, title }) => (
   <>
     <Button
       variant="ghost"
@@ -26,3 +26,5 @@ export const EventHeader: React.FC<EventHeaderProps> = ({ onBack, imageUrl, titl
     </div>
   </>
 );
+
+export default EventHeader;

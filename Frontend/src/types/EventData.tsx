@@ -4,13 +4,14 @@ export interface Event {
   description: string;
   date: string;
   location: string;
-  category: string;
   type: string;
+  price?: number; // Optional field for paid events
   capacity: number;
-  price: number;
-  image: string;
-  attendees: string[];
+  attendees: string[]; // Array of user IDs
+  image?: string; // Optional image URL
+  category: string; // <-- Ensure category is a string (or string[] if it's an array)
 }
+
 
 export interface TimeLeft {
   days: number;

@@ -1,8 +1,8 @@
 import React from 'react';
-import { LoginCredentials } from '../types/Login';
+import { LoginCredentials } from '../types/LoginData';
 import { useLogin } from '../hooks/useLogin';
 import { useLoginForm } from '../hooks/useLoginForm';
-import { LoginForm } from '../components/LoginForm';
+import { LoginForm } from '../components/auth/LoginForm';
 import ilus from '@/assets/illus.png';
 
 interface LoginProps {

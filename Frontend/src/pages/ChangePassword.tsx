@@ -2,9 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AuthService from "../api/changePasswordApi";
+import AuthService from "../apiServices/ChangePasswordAPI";
 import useChangePasswordForm from "@/hooks/useChangePasswordForm";
-import PasswordInput from "@/components/PasswordInput";
+import PasswordInput from "@/components/common/PasswordInput";
 import ilus from "@/assets/illus.png";
 
 interface ChangePasswordProps {

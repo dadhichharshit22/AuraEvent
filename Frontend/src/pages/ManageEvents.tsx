@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import EventService from '../api/manageEventApi';
-import { Event } from "@/types/Event";
+import EventService from '../apiServices/ManageEventAPI';
+import { Event } from "@/types/EventData";
 import { Button } from "@/components/ui/button";
 import {
   Card, CardContent, CardFooter, CardHeader, CardTitle,

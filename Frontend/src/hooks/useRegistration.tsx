@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { AuthService } from '../api/registrationApi';
+import { AuthService } from '../apiServices/RegistrationAPI';
 
 export const useRegistration = (onRegister: (token: string) => void) => {
   const [formData, setFormData] = useState({

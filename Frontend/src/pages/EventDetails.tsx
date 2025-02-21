@@ -1,38 +1,25 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { getUserIdFromToken } from "../utils/getUserFromToken";
-import {
-  Calendar,
-  MapPin,
-  Users,
-  Tag,
-  ChevronLeft,
-  Instagram,
-  Linkedin,
-  MessageCircle,
-  Ticket,
-  IndianRupee,
-  Building,
-  Clock,
-} from "lucide-react";
-import type { Event, TimeLeft } from "../types/Event";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { CountdownTimer } from "@/components/event-details/CountdownTimer";
-import { EventModal } from "@/components/event-details/EventModal";
-import { payEventFee } from "@/utils/payment";
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { getUserIdFromToken } from '../utils/userFromToken';
+import { Calendar, MapPin, Users, Tag, ChevronLeft, Clock, Ticket, IndianRupee, Building } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { CountdownTimer } from '@/components/events/event-details/CountdownTimer';
+import { EventModal } from '@/components/events/EventModal'; 
+import { payEventFee } from '@/utils/payment';
+import { Event, TimeLeft } from '@/types/EventData'; 
+import  EventDetailItem  from '@/components/events/event-details/EventDetailItem';
 
 const EventDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<Event | null>(null);
   const [isRegistered, setIsRegistered] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showUnregisterModal, setShowUnregisterModal] = useState(false);
+  const [showUnregisterModal, setShowUnregisterModal] = useState(false);  
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -66,7 +53,7 @@ const EventDetails: React.FC = () => {
   }, [event]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     const userId = getUserIdFromToken();
 
     axios
@@ -78,32 +65,35 @@ const EventDetails: React.FC = () => {
         setIsRegistered(response.data.attendees.includes(userId));
       })
       .catch((error) => {
-        console.error("Error fetching event details:", error);
+        console.error('Error fetching event details:', error);
         if (error.response?.status === 401) {
-          toast.error("Unauthorized. Please log in again.");
+          toast.error('Unauthorized. Please log in again.');
         }
       });
   }, [id]);
 
   const handleRegister = async () => {
     const userId = getUserIdFromToken();
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
 
     try {
-      if (event.type === "Paid") {
-        await payEventFee(token, event?._id, userId, { firstName: "Dadhich", lastName: "Shaabh", email: "abc@gmail.com" });
+      if (event.type === 'Paid') {
+        await payEventFee(token, event._id, userId, {
+          firstName: 'Dadhich',
+          lastName: 'Shaabh',
+          email: 'abc@gmail.com',
+        });
         setEvent((prevEvent) =>
           prevEvent
             ? {
-              ...prevEvent,
-              attendees: [...prevEvent.attendees, userId],
-            }
+                ...prevEvent,
+                attendees: [...prevEvent.attendees, userId],
+              }
             : null
         );
         setIsRegistered(true);
         setShowSuccessModal(true);
-      }
-      else {
+      } else {
         await axios.post(
           `http://localhost:8085/api/events/${id}/register`,
           { userId },
@@ -114,25 +104,25 @@ const EventDetails: React.FC = () => {
         setEvent((prevEvent) =>
           prevEvent
             ? {
-              ...prevEvent,
-              attendees: [...prevEvent.attendees, userId],
-            }
+                ...prevEvent,
+                attendees: [...prevEvent.attendees, userId],
+              }
             : null
         );
         setIsRegistered(true);
         setShowSuccessModal(true);
-
       }
-
     } catch (error) {
-      toast.error("Registration failed");
-      console.error("Error during registration:", error);
+      toast.error('Registration failed');
+      console.error('Error during registration:', error);
     }
   };
+
   const handleUnregister = async () => {
     const userId = getUserIdFromToken();
-    const token = localStorage.getItem("token");
-
+    const token = localStorage.getItem('token');
+    console.log(userId);
+    console.log(token);
     try {
       await axios.post(
         `http://localhost:8085/api/events/${id}/unregister`,
@@ -144,19 +134,19 @@ const EventDetails: React.FC = () => {
       setEvent((prevEvent) =>
         prevEvent
           ? {
-            ...prevEvent,
-            attendees: prevEvent.attendees.filter(
-              (attendee) => attendee !== userId
-            ),
-          }
+              ...prevEvent,
+              attendees: prevEvent.attendees.filter(
+                (attendee) => attendee !== userId
+              ),
+            }
           : null
       );
       setIsRegistered(false);
       setShowUnregisterModal(false);
-      toast.success("Successfully unregistered from the event");
+      toast.success('Successfully unregistered from the event');
     } catch (error) {
-      toast.error("Failed to unregister");
-      console.error("Error during unregistration:", error);
+      toast.error('Failed to unregister');
+      console.error('Error during unregistration:', error);
     }
   };
 
@@ -168,9 +158,7 @@ const EventDetails: React.FC = () => {
     );
   }
 
-  const categories = event.category
-    .split(",")
-    .map((category) => category.trim());
+  const categories = event.category.split(',').map((category) => category.trim());
   const seatsLeft = event.capacity - event.attendees.length;
 
   return (
@@ -179,16 +167,16 @@ const EventDetails: React.FC = () => {
         <Button
           variant="ghost"
           className="group mb-8 flex items-center text-slate-500"
-          onClick={() => navigate("/")}
+          onClick={() => navigate('/')}
         >
-          <ChevronLeft className="w-5 h-5 mr-2 transition-transform group-hover:-translate-x-1 " />
+          <ChevronLeft className="w-5 h-5 mr-2 transition-transform group-hover:-translate-x-1" />
           Back to Events
         </Button>
 
         <Card className="mb-8 overflow-hidden shadow-lg border-purple-200">
           <div className="aspect-video">
             <img
-              src={event.image || "/placeholder.svg"}
+              src={event.image || '/placeholder.svg'}
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -205,17 +193,17 @@ const EventDetails: React.FC = () => {
 
             <div className="grid gap-4">
               <EventDetailItem icon={Calendar} label="Date">
-                {new Date(event.date).toLocaleDateString("en-US", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
+                {new Date(event.date).toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
                 })}
               </EventDetailItem>
               <EventDetailItem icon={Clock} label="Time">
-                {new Date(event.date).toLocaleTimeString("en-US", {
-                  hour: "numeric",
-                  minute: "2-digit",
+                {new Date(event.date).toLocaleTimeString('en-US', {
+                  hour: 'numeric',
+                  minute: '2-digit',
                 })}
               </EventDetailItem>
               <EventDetailItem icon={MapPin} label="Location">
@@ -224,14 +212,13 @@ const EventDetails: React.FC = () => {
               <EventDetailItem icon={Ticket} label="Event Type">
                 {event.type}
               </EventDetailItem>
-              {event.type === 'Paid' &&
-                (<EventDetailItem icon={IndianRupee} label="Event Price">
+              {event.type === 'Paid' && (
+                <EventDetailItem icon={IndianRupee} label="Event Price">
                   <span className="font-medium text-red-500 underline">
-                    {"₹ " + event?.price}
+                    {'₹ ' + event.price}
                   </span>
                 </EventDetailItem>
-                )}
-
+              )}
               <EventDetailItem icon={Building} label="Capacity">
                 {event.capacity}
               </EventDetailItem>
@@ -256,9 +243,7 @@ const EventDetails: React.FC = () => {
             <Separator className="border-purple-200" />
 
             <div className="space-y-4">
-              <h3 className="font-medium text-lg text-purple-700">
-                Registration
-              </h3>
+              <h3 className="font-medium text-lg text-purple-700">Registration</h3>
               {seatsLeft <= 10 && (
                 <div className="bg-red-50 px-4 py-2 rounded-lg">
                   <p className="text-red-600 font-medium text-sm animate-pulse">
@@ -270,7 +255,7 @@ const EventDetails: React.FC = () => {
                 <Button
                   variant="destructive"
                   className="w-full"
-                  onClick={() => setShowUnregisterModal(true)}
+                  onClick={() => handleUnregister()}  // Trigger the modal visibility
                 >
                   Unregister
                 </Button>
@@ -280,7 +265,7 @@ const EventDetails: React.FC = () => {
                   onClick={handleRegister}
                   disabled={seatsLeft === 0}
                 >
-                  {seatsLeft === 0 ? "Event Full" : event.type === 'Paid' ? "Pay now for registration" : "Register Now"}
+                  {seatsLeft === 0 ? 'Event Full' : event.type === 'Paid' ? 'Pay now for registration' : 'Register Now'}
                 </Button>
               )}
             </div>
@@ -288,9 +273,7 @@ const EventDetails: React.FC = () => {
             <Separator className="border-purple-200" />
 
             <div className="space-y-4">
-              <h3 className="font-medium text-lg text-purple-700">
-                Share Event
-              </h3>
+              <h3 className="font-medium text-lg text-purple-700">Share Event</h3>
               <div className="flex gap-4">
                 <Button
                   variant="outline"
@@ -303,7 +286,7 @@ const EventDetails: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Instagram className="w-4 h-4" />
+                    {/* <Instagram /> */}
                   </a>
                 </Button>
                 <Button
@@ -317,54 +300,26 @@ const EventDetails: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Linkedin className="w-4 h-4" />
-                  </a>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="text-purple-600 border-purple-200 hover:bg-purple-50"
-                  asChild
-                >
-                  <a
-                    href="https://discord.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <MessageCircle className="w-4 h-4" />
+                    {/* <Linkedin /> */}
                   </a>
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
-      </div>
 
-      <EventModal
-        type="success"
-        isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-      />
-      <EventModal
-        type="unregister"
-        isOpen={showUnregisterModal}
-        onClose={() => setShowUnregisterModal(false)}
-        onConfirm={handleUnregister}
-      />
+        {/* Modal for Unregistering */}
+        {showUnregisterModal && (
+          <EventModal
+            title={"Unregister"}
+            message="Are you sure you want to unregister from this event?"
+            onConfirm={handleUnregister}
+            onCancel={() => setShowUnregisterModal(false)}  // Hide the modal
+          />
+        )}
+      </div>
     </div>
   );
 };
-
-const EventDetailItem: React.FC<{
-  icon: React.ElementType;
-  label: string;
-  children: React.ReactNode;
-}> = ({ icon: Icon, label, children }) => (
-  <div className="flex items-center text-gray-700">
-    <Icon className="w-5 h-5 mr-3 text-purple-600" />
-    <span className="font-medium mr-2 text-purple-800">{label}:</span>
-    <span>{children}</span>
-  </div>
-);
 
 export default EventDetails;

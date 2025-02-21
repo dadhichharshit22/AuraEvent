@@ -11,8 +11,8 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 
 import EventDetails from "./pages/EventDetails";
-import Footer from "./components/Footer";
-import Navbar from "./components/Navbar";
+import Footer from "./components/common/Footer";
+import Navbar from "./components/common/Navbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CreateEvent from "./pages/CreateEvent";

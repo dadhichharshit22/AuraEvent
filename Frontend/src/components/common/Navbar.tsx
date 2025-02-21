@@ -2,8 +2,8 @@ import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Button } from "./ui/button";
-import EventSearch from "../components/EventSearch";
+import { Button } from "../ui/button";
+import EventSearch from "../events/EventSearch";
 import {
   DropdownMenu,
   DropdownMenuContent,

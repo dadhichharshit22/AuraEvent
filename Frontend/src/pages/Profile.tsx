@@ -1,9 +1,9 @@
 import React from "react";
 import { useProfile } from "@/hooks/useProfile";
-import ProfileHeader from "@/components/ProfileHeader";
-import ProfileItem from "@/components/ProfileItem";
-import ProfileSection from "@/components/ProfileSection";
-import SocialMediaItem from "@/components/SocailMediaProfile";
+import ProfileHeader from "@/components/profile/ProfileHeader";
+import ProfileItem from "@/components/profile/ProfileItem";
+import ProfileSection from "@/components/profile/ProfileSection";
+import SocialMediaItem from "@/components/profile/SocailMediaProfile";
 import { Mail,Phone,MapPin,Cake,Calendar,Briefcase,Users,Music,Globe,Book } from "lucide-react";
 import { Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
