@@ -1,46 +1,32 @@
-import axios from 'axios';
-import { Event } from '../types/Event';
 
-const BASE_URL = 'http://localhost:8085/api';
+import axios from "axios";
 
-export class EventService {
-  private static getAuthHeader(token: string) {
-    return { Authorization: `Bearer ${token}` };
-  }
 
-  static async fetchEventDetails(eventId: string, token: string): Promise<Event> {
-    try {
-      const response = await axios.get(
-        `${BASE_URL}/events/${eventId}`,
-        { headers: this.getAuthHeader(token) }
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error('Failed to fetch event details');
+const API_URL = "http://localhost:8085/api/events/";
+
+export const fetchEvent = async (id: string, token: string) => {
+  const response = await axios.get(`${API_URL}${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const registerForEvent = async (id: string, userId: string, token: string) => {
+  await axios.post(
+    `${API_URL}${id}/register`,
+    { userId },
+    {
+      headers: { Authorization: `Bearer ${token}` },
     }
-  }
+  );
+};
 
-  static async registerForEvent(eventId: string, userId: string, token: string): Promise<void> {
-    try {
-      await axios.post(
-        `${BASE_URL}/events/${eventId}/register`,
-        { userId },
-        { headers: this.getAuthHeader(token) }
-      );
-    } catch (error) {
-      throw new Error('Failed to register for event');
+export const unregisterFromEvent = async (id: string, userId: string, token: string) => {
+  await axios.post(
+    `${API_URL}${id}/unregister`,
+    { userId },
+    {
+      headers: { Authorization: `Bearer ${token}` },
     }
-  }
-
-  static async unregisterFromEvent(eventId: string, userId: string, token: string): Promise<void> {
-    try {
-      await axios.post(
-        `${BASE_URL}/events/${eventId}/unregister`,
-        { userId },
-        { headers: this.getAuthHeader(token) }
-      );
-    } catch (error) {
-      throw new Error('Failed to unregister from event');
-    }
-  }
-}
+  );
+};
