@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Event } from "../models/eventModal";
-import User, { IUser } from "../models/userModal";  // Import User model as default
-
+import User, { IUser } from "../models/userModal";  
 import { EmailService } from "./emailService";
 
 interface AuthRequest extends Request {
