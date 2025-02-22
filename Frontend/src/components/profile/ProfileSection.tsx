@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Separator } from "@/components/ui/separator";
-import React from 'react'
+import React from "react";
 interface ProfileSectionProps {
   title: string;
   children: ReactNode;

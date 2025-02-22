@@ -11,7 +11,7 @@ export class OTPController {
     this.emailService = emailService;
   }
 
-  // Send OTP via email
+  // Send OTP via email or sms
   public sendOTP = async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
 
@@ -26,15 +26,15 @@ export class OTPController {
       await this.emailService.sendOTPEmail(email, otp);
       res.status(200).json({ message: "OTP sent successfully" });
     } catch (error) {
-      console.error('Error in send OTP:', error);
+      console.error("Error in send OTP:", error);
       res.status(500).json({
         message: "Error sending OTP",
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : "Unknown error",
       });
     }
   };
 
-  // Verify OTP
+  // verify OTP
   public verifyOTP = async (req: Request, res: Response): Promise<void> => {
     const { email, otp } = req.body;
 

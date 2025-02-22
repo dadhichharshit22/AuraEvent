@@ -2,12 +2,15 @@ import nodemailer from "nodemailer";
 import { userRegistrationTemplate } from "../emailTemplate/userRegistration";
 import { otpTemplate } from "../emailTemplate/otpTemplates";
 import { eventNotificationTemplate } from "../emailTemplate/eventNotification";
-import { 
-  registrationEmailTemplate, 
-  unregistrationEmailTemplate 
+import {
+  registrationEmailTemplate,
+  unregistrationEmailTemplate,
 } from "../emailTemplate/eventRegistration";
 import { newEventNotification } from "../emailTemplate/newEventNotification";
-import { paymentSuccessTemplate ,paymentFailureTemplate} from "../emailTemplate/paymentTemplates";
+import {
+  paymentSuccessTemplate,
+  paymentFailureTemplate,
+} from "../emailTemplate/paymentTemplates";
 
 export class EmailService {
   private transporter;
@@ -22,7 +25,11 @@ export class EmailService {
     });
   }
 
-  private async sendMail(to: string, subject: string, html: string): Promise<void> {
+  private async sendMail(
+    to: string,
+    subject: string,
+    html: string
+  ): Promise<void> {
     const mailOptions = {
       from: process.env.EMAIL_USER || "dadhich.harshit222002@gmail.com",
       to,
@@ -40,34 +47,22 @@ export class EmailService {
 
   async sendWelcomeEmail(name: string, email: string): Promise<void> {
     const html = userRegistrationTemplate(name);
-    await this.sendMail(
-      email,
-      "Welcome to Event Management",
-      html
-    );
+    await this.sendMail(email, "Welcome to Event Management", html);
   }
 
   async sendOTPEmail(email: string, otp: string): Promise<void> {
     const html = otpTemplate(otp);
-    await this.sendMail(
-      email,
-      "Your OTP Code",
-      html
-    );
+    await this.sendMail(email, "Your OTP Code", html);
   }
 
   async sendEventCreationEmail(
-    email: string, 
-    title: string, 
-    date: string, 
+    email: string,
+    title: string,
+    date: string,
     description: string
   ): Promise<void> {
     const html = eventNotificationTemplate(title, date, description);
-    await this.sendMail(
-      email,
-      "Event Created",
-      html
-    );
+    await this.sendMail(email, "Event Created", html);
   }
 
   async sendNewEventNotification(
@@ -77,11 +72,7 @@ export class EmailService {
     description: string
   ): Promise<void> {
     const html = newEventNotification(title, date, description);
-    await this.sendMail(
-      email,
-      "New Event Added to EventManage!",
-      html
-    );
+    await this.sendMail(email, "New Event Added to EventManage!", html);
   }
 
   async sendEventRegistrationEmail(
@@ -90,11 +81,7 @@ export class EmailService {
     date: string
   ): Promise<void> {
     const html = registrationEmailTemplate(title, date);
-    await this.sendMail(
-      email,
-      "Event Registration Confirmation",
-      html
-    );
+    await this.sendMail(email, "Event Registration Confirmation", html);
   }
 
   async sendEventUnregistrationEmail(
@@ -103,11 +90,7 @@ export class EmailService {
     date: string
   ): Promise<void> {
     const html = unregistrationEmailTemplate(title, date);
-    await this.sendMail(
-      email,
-      "Event Unregistration Confirmation",
-      html
-    );
+    await this.sendMail(email, "Event Unregistration Confirmation", html);
   }
 
   async sendEventUpdateEmail(
@@ -117,11 +100,7 @@ export class EmailService {
     description: string
   ): Promise<void> {
     const html = eventNotificationTemplate(title, date, description);
-    await this.sendMail(
-      email,
-      "Event Updated",
-      html
-    );
+    await this.sendMail(email, "Event Updated", html);
   }
 
   async sendPaymentSuccessEmail(
@@ -137,11 +116,7 @@ export class EmailService {
       transactionId,
       paymentDate
     );
-    await this.sendMail(
-      email,
-      "Payment Successful",
-      html
-    );
+    await this.sendMail(email, "Payment Successful", html);
   }
 
   async sendPaymentFailureEmail(
@@ -150,15 +125,7 @@ export class EmailService {
     amount: number,
     errorMessage: string
   ): Promise<void> {
-    const html = paymentFailureTemplate(
-      eventTitle,
-      amount,
-      errorMessage
-    );
-    await this.sendMail(
-      email,
-      "Payment Failed",
-      html
-    );
+    const html = paymentFailureTemplate(eventTitle, amount, errorMessage);
+    await this.sendMail(email, "Payment Failed", html);
   }
 }

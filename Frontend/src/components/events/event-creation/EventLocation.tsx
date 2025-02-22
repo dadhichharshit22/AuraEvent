@@ -29,8 +29,6 @@ export const EventLocation: React.FC<EventLocationProps> = ({
           </Button>
         </div>
       </div>
-
-    
     </div>
   );
 };

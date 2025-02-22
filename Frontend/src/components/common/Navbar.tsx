@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   LogOut,
   User,
@@ -23,7 +23,7 @@ import {
 interface NavbarProps {
   isRegistered: boolean;
   onLogout: () => void;
-  setIsRegistered:  React.Dispatch<React.SetStateAction<boolean>>;
+  setIsRegistered: React.Dispatch<React.SetStateAction<boolean>>;
   onSearch: (params: { location: string; tags: string; month: string }) => void;
 }
 
@@ -147,7 +147,7 @@ const Navbar: React.FC<NavbarProps> = ({
                   <Ticket className="mr-2 h-4 w-4" />
                   Registered Event
                 </DropdownMenuItem>
-                
+
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <Heart className="mr-2 h-4 w-4" />
                   Profile

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { Event } from "../models/Event";  // Changed to named import
-import User, { IUser } from "../models/User";
+import { Event } from "../models/eventModal";
+import User, { IUser } from "../models/userModal";
 import { EmailService } from "../services/emailService";
 
 interface AuthRequest extends Request {
@@ -14,17 +14,20 @@ class EventController {
     this.emailService = new EmailService();
   }
 
-  public createEvent = async (req: AuthRequest, res: Response): Promise<void> => {
-    const { 
-      title, 
-      description, 
-      date, 
-      location, 
-      category, 
-      image, 
-      price = 0, 
-      type, 
-      capacity 
+  public createEvent = async (
+    req: AuthRequest,
+    res: Response
+  ): Promise<void> => {
+    const {
+      title,
+      description,
+      date,
+      location,
+      category,
+      image,
+      price = 0,
+      type,
+      capacity,
     } = req.body;
 
     try {
@@ -44,7 +47,6 @@ class EventController {
 
       const savedEvent = await newEvent.save();
 
-      // Send confirmation email to event creator
       if (req.user?.email) {
         await this.emailService.sendEventCreationEmail(
           req.user.email,
@@ -54,18 +56,22 @@ class EventController {
         );
       }
 
-      // Notify all users about new event
       const users = await User.find();
       await Promise.all(
-        users.map(user =>
-          this.emailService.sendNewEventNotification(
-            user.email,
-            title,
-            date.toString(),
-            description
-          ).catch(error => 
-            console.error(`Failed to send notification to ${user.email}:`, error)
-          )
+        users.map((user) =>
+          this.emailService
+            .sendNewEventNotification(
+              user.email,
+              title,
+              date.toString(),
+              description
+            )
+            .catch((error) =>
+              console.error(
+                `Failed to send notification to ${user.email}:`,
+                error
+              )
+            )
         )
       );
 
@@ -76,30 +82,25 @@ class EventController {
     }
   };
 
-  public updateEvent = async (req: AuthRequest, res: Response): Promise<void> => {
-    const { 
-      title,
-      description,
-      date,
-      location,
-      image,
-      price,
-      type,
-      capacity 
-    } = req.body;
+  public updateEvent = async (
+    req: AuthRequest,
+    res: Response
+  ): Promise<void> => {
+    const { title, description, date, location, image, price, type, capacity } =
+      req.body;
 
     try {
       const event = await Event.findByIdAndUpdate(
         req.params.id,
-        { 
-          title, 
-          description, 
-          date, 
-          location, 
-          image, 
-          price, 
-          type, 
-          capacity 
+        {
+          title,
+          description,
+          date,
+          location,
+          image,
+          price,
+          type,
+          capacity,
         },
         { new: true, runValidators: true }
       );
@@ -109,21 +110,25 @@ class EventController {
         return;
       }
 
-      // Type the attendees to avoid 'any' type error
       const attendeeUsers = await User.find({
-        _id: { $in: event.attendees }
+        _id: { $in: event.attendees },
       });
 
       await Promise.all(
-        attendeeUsers.map((attendee: IUser) =>  // Defined the type for 'attendee'
-          this.emailService.sendEventUpdateEmail(
-            attendee.email,
-            title,
-            date.toString(),
-            description
-          ).catch(error => 
-            console.error(`Failed to send update notification to ${attendee.email}:`, error)
-          )
+        attendeeUsers.map((attendee: IUser) =>
+          this.emailService
+            .sendEventUpdateEmail(
+              attendee.email,
+              title,
+              date.toString(),
+              description
+            )
+            .catch((error) =>
+              console.error(
+                `Failed to send update notification to ${attendee.email}:`,
+                error
+              )
+            )
         )
       );
 
@@ -145,7 +150,9 @@ class EventController {
       }
 
       if (event.attendees.includes(userId)) {
-        res.status(400).json({ message: "User already registered for this event" });
+        res
+          .status(400)
+          .json({ message: "User already registered for this event" });
         return;
       }
 
@@ -167,7 +174,10 @@ class EventController {
     }
   };
 
-  public unregisterEvent = async (req: Request, res: Response): Promise<void> => {
+  public unregisterEvent = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
     const { userId } = req.body;
     const { id } = req.params;
 
@@ -184,7 +194,7 @@ class EventController {
       }
 
       event.attendees = event.attendees.filter(
-        attendee => attendee.toString() !== userId
+        (attendee) => attendee.toString() !== userId
       );
       await event.save();
 
@@ -240,7 +250,10 @@ class EventController {
     }
   };
 
-  public getCreatedEvents = async (req: AuthRequest, res: Response): Promise<void> => {
+  public getCreatedEvents = async (
+    req: AuthRequest,
+    res: Response
+  ): Promise<void> => {
     if (!req.user?._id) {
       res.status(401).json({ message: "User not authenticated" });
       return;
@@ -255,7 +268,10 @@ class EventController {
     }
   };
 
-  public getRegisteredEvents = async (req: AuthRequest, res: Response): Promise<void> => {
+  public getRegisteredEvents = async (
+    req: AuthRequest,
+    res: Response
+  ): Promise<void> => {
     if (!req.user?._id) {
       res.status(401).json({ message: "User not authenticated" });
       return;

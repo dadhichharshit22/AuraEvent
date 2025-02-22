@@ -6,7 +6,10 @@ const useChangePasswordForm = (email: string) => {
     confirmPassword: "",
   });
 
-  const updateField = (field: "password" | "confirmPassword", value: string) => {
+  const updateField = (
+    field: "password" | "confirmPassword",
+    value: string
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 

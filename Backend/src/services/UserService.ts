@@ -1,4 +1,4 @@
-import User, { IUser } from '../models/User';
+import User, { IUser } from "../models/userModal";
 
 export class UserService {
   public static async getUserById(id: string): Promise<IUser | null> {
@@ -9,7 +9,7 @@ export class UserService {
       }
       return user;
     } catch (error) {
-      throw new Error('Error fetching user from database');
+      throw new Error("Error fetching user from database");
     }
   }
 }

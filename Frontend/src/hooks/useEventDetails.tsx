@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { getUserIdFromToken } from '../utils/userFromToken';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { getUserIdFromToken } from "../utils/userFromToken";
 
 const useEventDetails = (id: string) => {
   const [event, setEvent] = useState<Event | null>(null);

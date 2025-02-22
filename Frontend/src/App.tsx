@@ -1,5 +1,4 @@
 import React from "react";
-import { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -7,89 +6,32 @@ import {
   Navigate,
 } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-
-import EventDetails from "./pages/EventDetails";
+import Register from "./pages/SinUpPage";
+import Login from "./pages/SignInPage";
+import EventDetails from "./pages/EventDetailsPage";
 import Footer from "./components/common/Footer";
 import Navbar from "./components/common/Navbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CreateEvent from "./pages/CreateEvent";
-import ManageEvents from "./pages/ManageEvents";
-import Profile from "./pages/Profile";
-import RegisteredEvents from "./pages/RegisteredEvents";
-import axios from "axios";
-import ForgotPassword from "./pages/ForgotPassword";
-import ChangePassword from "./pages/ChangePassword";
+import CreateEvent from "./pages/CreateEventPage";
+import ManageEvents from "./pages/ManageEventsPage";
+import Profile from "./pages/ProfilePage";
+import RegisteredEvents from "./pages/RegisteredEventsPage";
+import ForgotPassword from "./pages/ForgotPasswordPage";
+import ChangePassword from "./pages/ChangePasswordPage";
+import { useAuth } from "./hooks/useAuth";
+import { useEvents } from "./hooks/useEvent";
 
 const App: React.FC = () => {
-  const [isRegistered, setIsRegistered] = useState<boolean>(false);
-  const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
-  const [events, setEvents] = useState<any[]>([]);
+  const { auth, setIsRegistered, handleRegister, handleLogout } = useAuth();
+  const { filteredEvents, setFilteredEvents, handleSearch } = useEvents();
   const email = localStorage.getItem("email");
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsRegistered(true);
-    }
-
-    axios
-      .get("http://localhost:8085/api/events/getAllEvents")
-      .then((response) => {
-        setEvents(response.data);
-        setFilteredEvents(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching all events:", error);
-      });
-  }, []);
-
-  const handleRegister = (token: string) => {
-    localStorage.setItem("token", token);
-    setIsRegistered(true);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsRegistered(false);
-  };
-
-  const handleSearch = (searchParams: {
-    location: string;
-    tags: string;
-    month: string;
-  }) => {
-    let filtered = [...events];
-
-    if (searchParams.location) {
-      filtered = filtered.filter((event) =>
-        event.location
-          .toLowerCase()
-          .includes(searchParams.location.toLowerCase())
-      );
-    }
-
-    if (searchParams.tags) {
-      const searchTags = searchParams.tags
-        .toLowerCase()
-        .split(",")
-        .map((tag) => tag.trim());
-      filtered = filtered.filter(
-        (event) =>
-          event.category &&
-          searchTags.some((tag) => event.category.toLowerCase().includes(tag))
-      );
-    }
-    
-    setFilteredEvents(filtered);
-  };
 
   return (
     <Router>
       <div className="m-1 font-lexend text-white min-h-screen flex flex-col gap-2">
         <Navbar
-          isRegistered={isRegistered}
+          isRegistered={auth.isRegistered}
           setIsRegistered={setIsRegistered}
           onLogout={handleLogout}
           onSearch={handleSearch}
@@ -100,7 +42,7 @@ const App: React.FC = () => {
               path="/"
               element={
                 <HomePage
-                  isRegistered={isRegistered}
+                  isRegistered={auth.isRegistered}
                   onLogout={handleLogout}
                   filteredEvents={filteredEvents}
                   setFilteredEvents={setFilteredEvents}
@@ -114,7 +56,7 @@ const App: React.FC = () => {
             <Route
               path="/login"
               element={
-                isRegistered ? (
+                auth.isRegistered ? (
                   <Navigate to="/" />
                 ) : (
                   <Login onLogin={handleRegister} />
@@ -122,11 +64,14 @@ const App: React.FC = () => {
               }
             />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/change-password" element={<ChangePassword email={email} />} />
+            <Route
+              path="/change-password"
+              element={<ChangePassword email={email} />}
+            />
             <Route path="/event/:id" element={<EventDetails />} />
             <Route
               path="/dashboard/*"
-              element={isRegistered ? "" : <Navigate to="/login" />}
+              element={auth.isRegistered ? "" : <Navigate to="/login" />}
             />
             <Route path="/create-event" element={<CreateEvent />} />
             <Route path="/manage-events" element={<ManageEvents />} />

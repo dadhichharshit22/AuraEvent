@@ -7,9 +7,15 @@ interface PasswordInputProps {
   onChange: (val: string) => void;
 }
 
-const PasswordInput: React.FC<PasswordInputProps> = ({ label, value, onChange }) => (
+const PasswordInput: React.FC<PasswordInputProps> = ({
+  label,
+  value,
+  onChange,
+}) => (
   <div>
-    <label className="text-sm font-medium text-gray-700 block mb-1">{label}</label>
+    <label className="text-sm font-medium text-gray-700 block mb-1">
+      {label}
+    </label>
     <div className="relative">
       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
       <input

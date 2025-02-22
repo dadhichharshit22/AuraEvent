@@ -1,4 +1,4 @@
-import { instance } from "../config/razorpay";
+import { instance } from "../config/razorpayConnection";
 
 class PaymentGateway {
   static async createOrder(amount: number) {

@@ -1,16 +1,21 @@
 import React from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import EventCard from "@/components/EventCard";
+import EventCard from "@/components/events/EventCard";
 import ImageCarousel from "@/components/common/ImageCarousal";
 import { useFetchEvents } from "../hooks/useFetchEvent";
 
 interface HomepageProps {
+  isRegistered: boolean;
+  onLogout: () => void;
   filteredEvents: any[];
   setFilteredEvents: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-const HomePage: React.FC<HomepageProps> = ({ filteredEvents, setFilteredEvents }) => {
+const HomePage: React.FC<HomepageProps> = ({
+  filteredEvents,
+  setFilteredEvents,
+}) => {
   const { events, loading } = useFetchEvents(setFilteredEvents);
   const navigate = useNavigate();
 
@@ -38,21 +43,30 @@ const HomePage: React.FC<HomepageProps> = ({ filteredEvents, setFilteredEvents }
         <section className="space-y-8">
           <div className="mb-8 text-center">
             <h2 className="text-2xl text-primary font-bold">Upcoming Events</h2>
-            <p className="text-gray-600 mt-2">Discover amazing events happening near you</p>
+            <p className="text-gray-600 mt-2">
+              Discover amazing events happening near you
+            </p>
           </div>
 
           {(filteredEvents.length > 0 ? filteredEvents : events).length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {(filteredEvents.length > 0 ? filteredEvents : events).map((event) => (
-                <div key={event._id} className="transform transition-all duration-300 hover:-translate-y-2">
-                  <EventCard event={event} onExplore={handleExplore} />
-                </div>
-              ))}
+              {(filteredEvents.length > 0 ? filteredEvents : events).map(
+                (event) => (
+                  <div
+                    key={event._id}
+                    className="transform transition-all duration-300 hover:-translate-y-2"
+                  >
+                    <EventCard event={event} onExplore={handleExplore} />
+                  </div>
+                )
+              )}
             </div>
           ) : (
             <div className="text-center py-16 bg-white shadow-sm">
               <p className="text-xl text-gray-600">No events available</p>
-              <p className="text-gray-500 mt-2">Check back later for upcoming events</p>
+              <p className="text-gray-500 mt-2">
+                Check back later for upcoming events
+              </p>
             </div>
           )}
         </section>

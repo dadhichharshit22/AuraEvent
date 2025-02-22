@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
-import { eventService } from "../apiServices/EventAPI";
+import { eventService } from "../api/EventAPI";
 
 interface EventFormData {
   title: string;
@@ -64,7 +64,9 @@ export const useEventForm = () => {
       }
       navigate("/");
     } catch (error) {
-      toast.error(eventData?._id ? "Event update failed" : "Event creation failed");
+      toast.error(
+        eventData?._id ? "Event update failed" : "Event creation failed"
+      );
       console.error("Error:", error);
     }
   };

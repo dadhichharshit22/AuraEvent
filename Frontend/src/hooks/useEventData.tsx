@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export const useEventData = (setFilteredEvents: React.Dispatch<React.SetStateAction<any[]>>) => {
+export const useEventData = (
+  setFilteredEvents: React.Dispatch<React.SetStateAction<any[]>>
+) => {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -14,7 +16,7 @@ export const useEventData = (setFilteredEvents: React.Dispatch<React.SetStateAct
         setFilteredEvents(response.data);
         setLoading(false);
       })
-      .catch((error:unknown) => {
+      .catch((error: unknown) => {
         setError("Error fetching events. Please try again later.");
         setLoading(false);
       });

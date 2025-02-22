@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface InputFieldProps {
   id: string;
@@ -18,7 +18,9 @@ export const InputField: React.FC<InputFieldProps> = ({
   onChange,
 }) => (
   <div className="flex flex-col w-full items-center">
-    <label htmlFor={id} className="sr-only">{placeholder}</label>
+    <label htmlFor={id} className="sr-only">
+      {placeholder}
+    </label>
     <input
       id={id}
       name={name}

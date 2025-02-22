@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { getAllEvents } from "../apiServices/HomePageAPI";
+import { getAllEvents } from "../api/HomePageAPI";
 
 export const useFetchEvents = (setFilteredEvents: (events: any[]) => void) => {
   const [events, setEvents] = useState<any[]>([]);
@@ -13,7 +12,7 @@ export const useFetchEvents = (setFilteredEvents: (events: any[]) => void) => {
         setEvents(data);
         setFilteredEvents(data);
       } catch {
-        setEvents([]); // Handle error case
+        setEvents([]);
       } finally {
         setLoading(false);
       }

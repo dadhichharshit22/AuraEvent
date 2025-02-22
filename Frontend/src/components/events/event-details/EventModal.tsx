@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Check, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import React from 'react';
+import React from "react";
 
 interface EventModalProps {
   type: "success" | "unregister";

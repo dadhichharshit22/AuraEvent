@@ -1,8 +1,7 @@
-
-import { useState, useEffect, useCallback } from 'react';
-import { toast } from 'react-toastify';
-import { Event } from '../types/Event';
-import EventService from '../apiServices/ManageEventAPI';
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "react-toastify";
+import { Event } from "../types/eventProps";
+import EventService from "../api/ManageEventAPI";
 
 export const useEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -14,8 +13,8 @@ export const useEvents = () => {
       const fetchedEvents = await EventService.fetchCreatedEvents();
       setEvents(fetchedEvents);
     } catch (error) {
-      toast.error('Failed to fetch events');
-      console.error('Error fetching created events:', error);
+      toast.error("Failed to fetch events");
+      console.error("Error fetching created events:", error);
     } finally {
       setIsLoading(false);
     }
@@ -24,12 +23,14 @@ export const useEvents = () => {
   const handleDeleteEvent = async (eventId: string) => {
     try {
       await EventService.deleteEvent(eventId);
-      setEvents((prevEvents) => prevEvents.filter((event) => event._id !== eventId));
-      toast.success('Event deleted successfully');
+      setEvents((prevEvents) =>
+        prevEvents.filter((event) => event._id !== eventId)
+      );
+      toast.success("Event deleted successfully");
       return true;
     } catch (error) {
-      toast.error('Failed to delete event');
-      console.error('Error deleting event:', error);
+      toast.error("Failed to delete event");
+      console.error("Error deleting event:", error);
       return false;
     }
   };

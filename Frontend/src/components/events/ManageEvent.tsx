@@ -3,10 +3,23 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Plus, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import EventCard from "../EventCard";
-import EventService from "../../apiServices/ManageEventAPI";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import EventCard from "../events/EventCard";
+import EventService from "../../api/ManageEventAPI";
 
 interface Event {
   _id: string;
@@ -43,7 +56,8 @@ const ManageEvents: React.FC = () => {
     }
   };
 
-  const handleEdit = (event: Event) => navigate("/dashboard/create-event", { state: event });
+  const handleEdit = (event: Event) =>
+    navigate("/dashboard/create-event", { state: event });
 
   const handleDelete = async () => {
     if (!selectedEventId) return;
@@ -60,7 +74,9 @@ const ManageEvents: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-pulse text-xl text-gray-600">Loading your events...</div>
+        <div className="animate-pulse text-xl text-gray-600">
+          Loading your events...
+        </div>
       </div>
     );
   }
@@ -70,7 +86,9 @@ const ManageEvents: React.FC = () => {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Manage Events</h1>
-          <p className="text-gray-600 mt-2">Create and manage your upcoming events</p>
+          <p className="text-gray-600 mt-2">
+            Create and manage your upcoming events
+          </p>
         </div>
         <Button onClick={() => navigate("/dashboard/create-event")}>
           <Plus className="w-5 h-5 mr-2" />
@@ -116,11 +134,18 @@ const ManageEvents: React.FC = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete Event</DialogTitle>
-            <DialogDescription>Are you sure you want to delete this event? This action cannot be undone.</DialogDescription>
+            <DialogDescription>
+              Are you sure you want to delete this event? This action cannot be
+              undone.
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

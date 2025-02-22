@@ -1,13 +1,13 @@
-import { Calendar } from 'lucide-react';
+import { Calendar } from "lucide-react";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import React from 'react'
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import React from "react";
 interface EmptyEventStateProps {
   onBack: () => void;
 }

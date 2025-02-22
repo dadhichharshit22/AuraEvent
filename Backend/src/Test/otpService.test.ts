@@ -1,7 +1,7 @@
 import { OTPService } from "../services/otpService";
-import OTP from "../models/OTP";
+import OTP from "../models/otpModal";
 
-jest.mock("../models/OTP");
+jest.mock("../models/otpModal");
 
 describe("OTPService", () => {
   let otpService: OTPService;

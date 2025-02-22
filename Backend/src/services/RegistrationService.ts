@@ -1,14 +1,12 @@
 import { Request, Response } from "express";
-import User from "../models/User";
+import User from "../models/userModal";
 import { EmailService } from "../services/emailService";
 import { PasswordHelper } from "../utils/passwordHelper";
 import jwt from "jsonwebtoken";
 
 export interface IAuthenticationService {
-    register(req: Request, res: Response): Promise<void>;
-    
-  }
-  
+  register(req: Request, res: Response): Promise<void>;
+}
 
 export class RegistrationService implements IAuthenticationService {
   constructor(private emailService: EmailService) {}
@@ -21,16 +19,27 @@ export class RegistrationService implements IAuthenticationService {
 
   async register(req: Request, res: Response): Promise<void> {
     const { name, email, phoneNumber, password, username } = req.body;
-    const missingFieldsError = this.validateRequiredFields({ name, email, phoneNumber, password, username });
+    const missingFieldsError = this.validateRequiredFields({
+      name,
+      email,
+      phoneNumber,
+      password,
+      username,
+    });
     if (missingFieldsError) {
       this.handleErrorResponse(res, 400, missingFieldsError);
       return;
     }
 
     try {
-      const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+      const existingUser = await User.findOne({
+        $or: [{ email }, { username }],
+      });
       if (existingUser) {
-        const errorMessage = existingUser.email === email ? "Email already registered." : "Username already taken.";
+        const errorMessage =
+          existingUser.email === email
+            ? "Email already registered."
+            : "Username already taken.";
         this.handleErrorResponse(res, 400, errorMessage);
         return;
       }
@@ -65,7 +74,11 @@ export class RegistrationService implements IAuthenticationService {
       : null;
   }
 
-  private handleErrorResponse(res: Response, status: number, message: string): void {
+  private handleErrorResponse(
+    res: Response,
+    status: number,
+    message: string
+  ): void {
     res.status(status).json({ success: false, message });
   }
 }

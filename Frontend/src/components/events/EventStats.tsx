@@ -1,5 +1,5 @@
-import { Calendar, Users, MapPin } from 'lucide-react';
-import React from 'react'
+import { Calendar, Users, MapPin } from "lucide-react";
+import React from "react";
 interface EventStatsProps {
   date: string;
   location: string;
@@ -17,10 +17,10 @@ export const EventStats: React.FC<EventStatsProps> = ({
     <div className="flex items-center text-gray-500 mb-2">
       <Calendar className="w-4 h-4 mr-2" />
       <span className="text-sm">
-        {new Date(date).toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
+        {new Date(date).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
         })}
       </span>
     </div>

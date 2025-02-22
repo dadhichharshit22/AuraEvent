@@ -1,5 +1,4 @@
-
-import { OTPService } from "../services/otpService"; 
+import { OTPService } from "../services/otpService";
 import { OTPController } from "../controllers/otpcontroller";
 import { EmailService } from "../services/emailService";
 import { Router } from "express";

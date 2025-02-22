@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { RegistrationService } from "../services/RegistrationService";
+import { RegistrationService } from "../services/registrationService";
 import { EmailService } from "../services/emailService";
 import { PasswordHelper } from "../utils/passwordHelper";
-import User from "../models/User";
+import User from "../models/userModal";
 import jwt from "jsonwebtoken";
 
-jest.mock("../models/User");
+jest.mock("../models/userModal");
 jest.mock("../services/emailService");
 jest.mock("../utils/passwordHelper");
 

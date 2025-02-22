@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { LoginCredentials } from '../types/LoginData';
-import { AuthService } from '../apiServices/LoginAPI';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { LoginCredentials } from "../types/loginProps";
+import { AuthService } from "../api/LoginAPI";
 
 export const useLogin = (onLoginSuccess: (token: string) => void) => {
   const navigate = useNavigate();
@@ -13,11 +13,11 @@ export const useLogin = (onLoginSuccess: (token: string) => void) => {
     try {
       const response = await AuthService.login(credentials);
       onLoginSuccess(response.token);
-      toast.success('Logged in successfully');
-      navigate('/');
+      toast.success("Logged in successfully");
+      navigate("/");
     } catch (error) {
-      console.error('Login failed:', error);
-      toast.error('Login failed. Please try again.');
+      console.error("Login failed:", error);
+      toast.error("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }

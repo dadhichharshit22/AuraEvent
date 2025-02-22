@@ -1,7 +1,7 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { InputField } from '../common/InputFieldLogin';
-import { LoginCredentials } from '../../types/LoginData';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { InputField } from "../common/InputFieldLogin";
+import { LoginCredentials } from "../../types/loginProps";
 
 interface LoginFormProps {
   values: LoginCredentials;
@@ -16,7 +16,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   onSubmit,
   isLoading,
 }) => (
-  <form onSubmit={onSubmit} className="flex gap-4 flex-col justify-center items-center w-full">
+  <form
+    onSubmit={onSubmit}
+    className="flex gap-4 flex-col justify-center items-center w-full"
+  >
     <InputField
       id="email"
       name="email"
@@ -48,7 +51,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       type="submit"
       disabled={isLoading}
     >
-      {isLoading ? 'Logging in...' : 'Login'}
+      {isLoading ? "Logging in..." : "Login"}
     </Button>
   </form>
 );

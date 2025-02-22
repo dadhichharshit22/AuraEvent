@@ -1,9 +1,9 @@
-import { PasswordChangeService } from "../services/PasswordChangeService";
-import User from "../models/User";
+import { PasswordChangeService } from "../services/passwordChangeService";
+import User from "../models/userModal";
 import { PasswordHelper } from "../utils/passwordHelper";
 import { Request, Response } from "express";
 
-jest.mock("../models/User");
+jest.mock("../models/userModal");
 jest.mock("../utils/passwordHelper");
 
 describe("PasswordChangeService", () => {

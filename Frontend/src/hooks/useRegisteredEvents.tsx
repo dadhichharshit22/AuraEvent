@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Event } from '../types/Event';
-import { EventService } from '../apiServices/RegisteredAPI';
+import { useState, useEffect } from "react";
+import { Event } from "../types/eventProps";
+import { EventService } from "../api/RegisteredAPI";
 
 export const useRegisteredEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -13,7 +13,7 @@ export const useRegisteredEvents = () => {
         const data = await EventService.getRegisteredEvents();
         setEvents(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }

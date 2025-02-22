@@ -1,31 +1,33 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { AuthService } from '../apiServices/RegistrationAPI';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { AuthService } from "../api/RegistrationAPI";
 
 export const useRegistration = (onRegister: (token: string) => void) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    username: '',
-    phoneNumber: '',
-    password: '',
+    name: "",
+    email: "",
+    username: "",
+    phoneNumber: "",
+    password: "",
   });
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const navigate = useNavigate();
 
-  const handleInputChange = (field: keyof typeof formData) => (value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  const handleInputChange =
+    (field: keyof typeof formData) => (value: string) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    };
 
   const handleSendOTP = async () => {
     try {
       await AuthService.sendOTP(formData.email);
       setOtpSent(true);
-      toast.success('OTP sent to your email. Please check.');
+      toast.success("OTP sent to your email. Please check.");
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to send OTP';
+      const message =
+        error instanceof Error ? error.message : "Failed to send OTP";
       toast.error(message);
     }
   };
@@ -37,10 +39,11 @@ export const useRegistration = (onRegister: (token: string) => void) => {
         formData
       );
       onRegister(response.token);
-      toast.success('Registered successfully.');
-      navigate('/');
+      toast.success("Registered successfully.");
+      navigate("/");
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Registration failed';
+      const message =
+        error instanceof Error ? error.message : "Registration failed";
       toast.error(message);
     }
   };

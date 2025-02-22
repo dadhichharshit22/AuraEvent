@@ -9,7 +9,10 @@ interface EventRegistrationProps {
 }
 
 const EventRegistration: React.FC<EventRegistrationProps> = ({
-  isRegistered, seatsLeft, handleRegister, handleUnregister
+  isRegistered,
+  seatsLeft,
+  handleRegister,
+  handleUnregister,
 }) => (
   <div className="space-y-4">
     <h3 className="font-medium text-lg text-purple-700">Registration</h3>
@@ -21,11 +24,19 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
       </div>
     )}
     {isRegistered ? (
-      <Button variant="destructive" className="w-full" onClick={handleUnregister}>
+      <Button
+        variant="destructive"
+        className="w-full"
+        onClick={handleUnregister}
+      >
         Unregister
       </Button>
     ) : (
-      <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={handleRegister} disabled={seatsLeft === 0}>
+      <Button
+        className="w-full bg-purple-600 hover:bg-purple-700"
+        onClick={handleRegister}
+        disabled={seatsLeft === 0}
+      >
         {seatsLeft === 0 ? "Event Full" : "Register Now"}
       </Button>
     )}

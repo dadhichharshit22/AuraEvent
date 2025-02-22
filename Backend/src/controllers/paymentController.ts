@@ -1,19 +1,21 @@
 import { Request, Response } from "express";
-import EventService from "../services/eventAttendee";
+import EventService from "../services/eventAttendeeService";
 import PaymentGateway from "../paymentGateways/paymentGateway";
 import { EmailService } from "../services/emailService";
 import crypto from "crypto";
 
 class PaymentService {
   constructor(private emailService: EmailService) {}
-
+  // Capture Payment for the Paid Event
   public async capturePayment(req: Request, res: Response): Promise<void> {
     try {
       console.log("Request body:", req.body);
       const { eventId, userId }: { eventId: string; userId: string } = req.body;
 
       if (!eventId) {
-        res.status(400).json({ success: false, message: "Please provide Event Id" });
+        res
+          .status(400)
+          .json({ success: false, message: "Please provide Event Id" });
         return;
       }
 
@@ -24,7 +26,9 @@ class PaymentService {
       }
 
       if (EventService.isUserRegistered(event, userId)) {
-        res.status(400).json({ success: false, message: "User is already registered." });
+        res
+          .status(400)
+          .json({ success: false, message: "User is already registered." });
         return;
       }
 
@@ -35,21 +39,44 @@ class PaymentService {
       res.json({ success: true, message: paymentResponse });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: "Could not initiate order" });
+      res
+        .status(500)
+        .json({ success: false, message: "Could not initiate order" });
     }
   }
 
+  // Verify the Payment after paymentSuccessfully
   public async verifyPayment(req: Request, res: Response): Promise<void> {
     try {
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature, eventId, userId } = req.body;
+      const {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        eventId,
+        userId,
+      } = req.body;
 
-      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !eventId || !userId) {
+      if (
+        !razorpay_order_id ||
+        !razorpay_payment_id ||
+        !razorpay_signature ||
+        !eventId ||
+        !userId
+      ) {
         res.status(400).json({ success: false, message: "Payment Failed" });
         return;
       }
 
-      if (!PaymentService.isPaymentValid(razorpay_order_id, razorpay_payment_id, razorpay_signature)) {
-        res.status(400).json({ success: false, message: "Payment verification failed" });
+      if (
+        !PaymentService.isPaymentValid(
+          razorpay_order_id,
+          razorpay_payment_id,
+          razorpay_signature
+        )
+      ) {
+        res
+          .status(400)
+          .json({ success: false, message: "Payment verification failed" });
         return;
       }
 
@@ -62,11 +89,17 @@ class PaymentService {
       res.status(200).json({ success: true, message: "Payment Verified" });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: "Internal Server Error" });
+      res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
     }
   }
 
-  private static isPaymentValid(orderId: string, paymentId: string, signature: string): boolean {
+  private static isPaymentValid(
+    orderId: string,
+    paymentId: string,
+    signature: string
+  ): boolean {
     const body = `${orderId}|${paymentId}`;
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_SECRET || "")

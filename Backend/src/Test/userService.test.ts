@@ -1,7 +1,7 @@
-import { UserService } from "../services/UserService";
-import User from "../models/User";
+import { UserService } from "../services/userService";
+import User from "../models/userModal";
 
-jest.mock("../models/User", () => ({
+jest.mock("../models/userModal", () => ({
   findById: jest.fn(),
 }));
 

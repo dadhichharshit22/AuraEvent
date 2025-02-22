@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { RegistrationService } from "../services/RegistrationService"
-import { LoginService } from "../services/LoginService";
-import { PasswordChangeService } from "../services/PasswordChangeService";
+import { RegistrationService } from "../services/registrationService";
+import { LoginService } from "../services/loginService";
+import { PasswordChangeService } from "../services/passwordChangeService";
 
 export class AuthenticationController {
   constructor(
