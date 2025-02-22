@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
-import { Event } from "../models/Event";
-import User from "../models/User";  // Import User model as default
+import { Event } from "../models/eventModal";
+import User, { IUser } from "../models/userModal";  // Import User model as default
 
 import { EmailService } from "./emailService";
 
+interface AuthRequest extends Request {
+  user?: IUser;
+}
 export class EventService {
   private emailService: EmailService;
 

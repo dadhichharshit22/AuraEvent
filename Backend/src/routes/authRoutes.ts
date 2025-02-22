@@ -5,24 +5,26 @@ import { RegistrationService } from "../services/registrationService";
 import { LoginService } from "../services/loginService";
 import { PasswordChangeService } from "../services/passwordChangeService";
 
-// Initialize the required services
+
 const emailService = new EmailService();
 const registrationService = new RegistrationService(emailService);
 const loginService = new LoginService();
 const passwordChangeService = new PasswordChangeService();
 
-// Initialize the AuthenticationController with the services
+// Initialize the AuthenticationController 
 const authController = new AuthenticationController(
   registrationService,
   loginService,
   passwordChangeService
 );
 
-// Create the router and define routes
-const router = Router();
 
+const router = Router();
+// signUp 
 router.post("/register", (req, res) => authController.register(req, res));
+// singin
 router.post("/login", (req, res) => authController.login(req, res));
+// changePassword
 router.post("/change-password", (req, res) =>
   authController.changePassword(req, res)
 );
