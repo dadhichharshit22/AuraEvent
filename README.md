@@ -81,7 +81,33 @@ npm install
 npm run dev
 ```
 
+## Project Folder Structure
+```
+.
+├── frontend/
+│   ├── public/
+│   ├── src/    
+|   |   |── api/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── hooks/
+│   │   └── styles/
+│   └── package.json
+└── backend/
+    ├── src/
+    |   ├── config/
+    │   ├── controllers/
+    │   ├── models/
+    │   ├── routes/
+    │   └── middleware/
+    |   └── services/
+    └── package.json
+```
 
+## Available Scripts
+
+### `npm test`
+Launches the test runner
 
 
 

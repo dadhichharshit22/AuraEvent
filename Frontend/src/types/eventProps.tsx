@@ -9,7 +9,7 @@ export interface Event {
   capacity: number;
   attendees: string[]; 
   image?: string; 
-  category: string; 
+  category?: string; 
 }
 
 export interface TimeLeft {
