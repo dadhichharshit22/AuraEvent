@@ -9,11 +9,11 @@ export class AuthenticationController {
     private loginService: LoginService,
     private passwordChangeService: PasswordChangeService
   ) {}
-
+ // register
   public async register(req: Request, res: Response): Promise<void> {
     await this.registrationService.register(req, res);
   }
-
+ // login
   public async login(req: Request, res: Response): Promise<void> {
     await this.loginService.login(req, res);
   }
