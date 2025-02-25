@@ -11,7 +11,7 @@ export class OTPController {
     this.emailService = emailService;
   }
 
-  // Send OTP via email or sms
+  
   public sendOTP = async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
 
@@ -34,7 +34,7 @@ export class OTPController {
     }
   };
 
-  // verify OTP
+  
   public verifyOTP = async (req: Request, res: Response): Promise<void> => {
     const { email, otp } = req.body;
 

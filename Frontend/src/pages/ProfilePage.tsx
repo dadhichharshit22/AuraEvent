@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 const Profile: React.FC = () => {
   const { profile, error } = useProfile();
 
-  // if data not available
+  
   const defaultProfile = {
     name: "John Doe",
     username: "johndoe",

@@ -39,7 +39,7 @@ const EventSearch: React.FC<EventSearchProps> = ({ onSearch }) => {
     onSearch(initialSearchParams);
   };
 
-  // Enhanced input styles for more polish
+  
   const inputClassName =
     "flex h-9 w-full text-black rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm";
 
@@ -66,7 +66,7 @@ const EventSearch: React.FC<EventSearchProps> = ({ onSearch }) => {
           <MapPin className={iconClassName} />
         </div>
 
-        {/* Tags Input */}
+      
         <div className="">
           <input
             type="text"
@@ -81,7 +81,7 @@ const EventSearch: React.FC<EventSearchProps> = ({ onSearch }) => {
           <Tag className={iconClassName} />
         </div>
 
-        {/* Buttons */}
+        
         <Button type="button" onClick={handleReset}>
           <RefreshCw className="h-4 w-4 mr-2" />
           Reset

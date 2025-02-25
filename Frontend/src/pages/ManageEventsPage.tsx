@@ -142,7 +142,7 @@ const ManageEvents: React.FC = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
         <DialogContent>
           <DialogHeader>

@@ -31,7 +31,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ email }) => {
 
   return (
     <div className="flex gap-2 justify-between h-screen text-black">
-      {/* Left Side Illustration */}
+      
       <div className="w-1/2 h-full overflow-hidden">
         <img
           src={ilus}
@@ -40,7 +40,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ email }) => {
         />
       </div>
 
-      {/* Right Side Form */}
+    
       <div className="w-1/2 flex flex-col justify-center items-center">
         <h1 className="font-extrabold text-4xl mb-6">Change Password</h1>
         <form className="space-y-6 w-1/2">

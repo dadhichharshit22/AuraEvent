@@ -59,12 +59,12 @@ const ImageCarousel: React.FC = () => {
         </CarouselContent>
         <div className="absolute top-1/2 left-0 transform -translate-y-1/2 z-10">
           <CarouselPrevious className="bg-white p-2 rounded-full shadow-md hover:bg-gray-200">
-            &lt; {/* You can replace this with an icon */}
+            &lt; 
           </CarouselPrevious>
         </div>
         <div className="absolute top-1/2 right-0 transform -translate-y-1/2 z-10">
           <CarouselNext className="bg-white p-2 rounded-full shadow-md hover:bg-gray-200">
-            &gt; {/* You can replace this with an icon */}
+            &gt; 
           </CarouselNext>
         </div>
       </Carousel>

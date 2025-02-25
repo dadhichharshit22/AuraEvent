@@ -13,7 +13,6 @@ export class EventService {
     this.emailService = emailService;
   }
 
-  // Create event
   public async createEvent(req: Request, res: Response): Promise<void> {
     const { title, description, date, location, category, image, price = 0, type, capacity } = req.body;
 
@@ -34,7 +33,7 @@ export class EventService {
 
       const savedEvent = await newEvent.save();
 
-      // Send confirmation email to event creator
+      
       if (req.user?.email) {
         await this.emailService.sendEventCreationEmail(
           req.user.email,
@@ -44,7 +43,7 @@ export class EventService {
         );
       }
 
-      // Notify all users about new event
+    
       const users = await User.find();
       await Promise.all(
         users.map(user =>
@@ -66,7 +65,7 @@ export class EventService {
     }
   }
 
-  // Update event
+  
   public async updateEvent(req: Request, res: Response): Promise<void> {
     const { title, description, date, location, image, price, type, capacity } = req.body;
 
@@ -103,7 +102,7 @@ export class EventService {
     }
   }
 
-  // Register event
+  
   public async registerEvent(req: Request, res: Response): Promise<void> {
     const { userId } = req.body;
     const { id } = req.params;
@@ -138,7 +137,7 @@ export class EventService {
     }
   }
 
-  // Unregister event
+  
   public async unregisterEvent(req: Request, res: Response): Promise<void> {
     const { userId } = req.body;
     const { id } = req.params;
@@ -175,7 +174,7 @@ export class EventService {
     }
   }
 
-  // Delete event
+  
   public async deleteEvent(req: Request, res: Response): Promise<void> {
     try {
       const event = await Event.findByIdAndDelete(req.params.id);
@@ -189,7 +188,7 @@ export class EventService {
     }
   }
 
-  // Get event by ID
+  
   public async getEventById(req: Request, res: Response): Promise<void> {
     try {
       const event = await Event.findById(req.params.id);
@@ -204,7 +203,7 @@ export class EventService {
     }
   }
 
-  // Get all events
+  
   public async getAllEvents(req: Request, res: Response): Promise<void> {
     try {
       const events = await Event.find();
@@ -215,7 +214,7 @@ export class EventService {
     }
   }
 
-  // Get events created by a user
+  
   public async getCreatedEvents(req: Request, res: Response): Promise<void> {
     if (!req.user?._id) {
       res.status(401).json({ message: "User not authenticated" });
@@ -231,7 +230,7 @@ export class EventService {
     }
   }
 
-  // Get events a user is registered for
+  
   public async getRegisteredEvents(req: Request, res: Response): Promise<void> {
     if (!req.user?._id) {
       res.status(401).json({ message: "User not authenticated" });

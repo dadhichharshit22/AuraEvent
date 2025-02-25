@@ -4,10 +4,9 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 import { EmailService } from "../services/emailService";
 
 const router = express.Router();
-const emailService = new EmailService(); // instance of emailService
-const paymentService = new PaymentService(emailService); // instance of paymentService
+const emailService = new EmailService();
+const paymentService = new PaymentService(emailService);
 
-//
 router.post(
   "/capturePayment",
   authMiddleware,

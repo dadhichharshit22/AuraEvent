@@ -269,7 +269,7 @@ const EventDetails: React.FC = () => {
                 <Button
                   variant="destructive"
                   className="w-full"
-                  onClick={() => handleUnregister()} // Trigger the modal visibility
+                  onClick={() => handleUnregister()}
                 >
                   Unregister
                 </Button>
@@ -305,9 +305,7 @@ const EventDetails: React.FC = () => {
                     href="https://instagram.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                  >
-                    {/* <Instagram /> */}
-                  </a>
+                  ></a>
                 </Button>
                 <Button
                   variant="outline"
@@ -319,22 +317,19 @@ const EventDetails: React.FC = () => {
                     href="https://linkedin.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                  >
-                    {/* <Linkedin /> */}
-                  </a>
+                  ></a>
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Modal for Unregistering */}
         {showUnregisterModal && (
           <EventModal
             title={"Unregister"}
             message="Are you sure you want to unregister from this event?"
             onConfirm={handleUnregister}
-            onCancel={() => setShowUnregisterModal(false)} // Hide the modal
+            onCancel={() => setShowUnregisterModal(false)}
           />
         )}
       </div>

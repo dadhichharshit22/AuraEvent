@@ -6,7 +6,7 @@ import crypto from "crypto";
 
 class PaymentService {
   constructor(private emailService: EmailService) {}
-  // Capture Payment for the Paid Event
+
   public async capturePayment(req: Request, res: Response): Promise<void> {
     try {
       console.log("Request body:", req.body);
@@ -45,7 +45,6 @@ class PaymentService {
     }
   }
 
-  // Verify the Payment after paymentSuccessfully
   public async verifyPayment(req: Request, res: Response): Promise<void> {
     try {
       const {
