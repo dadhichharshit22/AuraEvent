@@ -19,113 +19,70 @@ export class EmailService {
     this.transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER || "dadhich.harshit222002@gmail.com",
-        pass: process.env.EMAIL_PASSWORD || "chvq cfvw neuo tanc",
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
+
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+      console.warn("Warning: Email credentials are missing in environment variables.");
+    }
   }
 
-  private async sendMail(
-    to: string,
+  private async sendEmail(
+    recipient: string,
     subject: string,
-    html: string
+    htmlContent: string
   ): Promise<void> {
     const mailOptions = {
-      from: process.env.EMAIL_USER || "dadhich.harshit222002@gmail.com",
-      to,
+      from: process.env.EMAIL_USER,
+      to: recipient,
       subject,
-      html,
+      html: htmlContent,
     };
 
     try {
       await this.transporter.sendMail(mailOptions);
+      console.log(`Email sent to ${recipient} with subject: ${subject}`);
     } catch (error) {
-      console.error("Email sending failed:", error);
-      throw new Error("Failed to send email");
+      console.error(`Failed to send email to ${recipient}:`, error);
+      throw new Error("Email delivery failed");
     }
   }
 
   async sendWelcomeEmail(name: string, email: string): Promise<void> {
-    const html = userRegistrationTemplate(name);
-    await this.sendMail(email, "Welcome to Event Management", html);
+    await this.sendEmail(email, "Welcome to Event Management", userRegistrationTemplate(name));
   }
 
   async sendOTPEmail(email: string, otp: string): Promise<void> {
-    const html = otpTemplate(otp);
-    await this.sendMail(email, "Your OTP Code", html);
+    await this.sendEmail(email, "Your OTP Code", otpTemplate(otp));
   }
 
-  async sendEventCreationEmail(
-    email: string,
-    title: string,
-    date: string,
-    description: string
-  ): Promise<void> {
-    const html = eventNotificationTemplate(title, date, description);
-    await this.sendMail(email, "Event Created", html);
+  async sendEventCreationEmail(email: string, title: string, date: string, description: string): Promise<void> {
+    await this.sendEmail(email, "Event Created", eventNotificationTemplate(title, date, description));
   }
 
-  async sendNewEventNotification(
-    email: string,
-    title: string,
-    date: string,
-    description: string
-  ): Promise<void> {
-    const html = newEventNotification(title, date, description);
-    await this.sendMail(email, "New Event Added to EventManage!", html);
+  async sendNewEventNotification(email: string, title: string, date: string, description: string): Promise<void> {
+    await this.sendEmail(email, "New Event Added to EventManage!", newEventNotification(title, date, description));
   }
 
-  async sendEventRegistrationEmail(
-    email: string,
-    title: string,
-    date: string
-  ): Promise<void> {
-    const html = registrationEmailTemplate(title, date);
-    await this.sendMail(email, "Event Registration Confirmation", html);
+  async sendEventRegistrationEmail(email: string, title: string, date: string): Promise<void> {
+    await this.sendEmail(email, "Event Registration Confirmation", registrationEmailTemplate(title, date));
   }
 
-  async sendEventUnregistrationEmail(
-    email: string,
-    title: string,
-    date: string
-  ): Promise<void> {
-    const html = unregistrationEmailTemplate(title, date);
-    await this.sendMail(email, "Event Unregistration Confirmation", html);
+  async sendEventUnregistrationEmail(email: string, title: string, date: string): Promise<void> {
+    await this.sendEmail(email, "Event Unregistration Confirmation", unregistrationEmailTemplate(title, date));
   }
 
-  async sendEventUpdateEmail(
-    email: string,
-    title: string,
-    date: string,
-    description: string
-  ): Promise<void> {
-    const html = eventNotificationTemplate(title, date, description);
-    await this.sendMail(email, "Event Updated", html);
+  async sendEventUpdateEmail(email: string, title: string, date: string, description: string): Promise<void> {
+    await this.sendEmail(email, "Event Updated", eventNotificationTemplate(title, date, description));
   }
 
-  async sendPaymentSuccessEmail(
-    email: string,
-    eventTitle: string,
-    amount: number,
-    transactionId: string,
-    paymentDate: string
-  ): Promise<void> {
-    const html = paymentSuccessTemplate(
-      eventTitle,
-      amount,
-      transactionId,
-      paymentDate
-    );
-    await this.sendMail(email, "Payment Successful", html);
+  async sendPaymentSuccessEmail(email: string, eventTitle: string, amount: number, transactionId: string, paymentDate: string): Promise<void> {
+    await this.sendEmail(email, "Payment Successful", paymentSuccessTemplate(eventTitle, amount, transactionId, paymentDate));
   }
 
-  async sendPaymentFailureEmail(
-    email: string,
-    eventTitle: string,
-    amount: number,
-    errorMessage: string
-  ): Promise<void> {
-    const html = paymentFailureTemplate(eventTitle, amount, errorMessage);
-    await this.sendMail(email, "Payment Failed", html);
+  async sendPaymentFailureEmail(email: string, eventTitle: string, amount: number, errorMessage: string): Promise<void> {
+    await this.sendEmail(email, "Payment Failed", paymentFailureTemplate(eventTitle, amount, errorMessage));
   }
 }
