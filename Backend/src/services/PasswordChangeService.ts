@@ -3,7 +3,6 @@ import User from "../models/userModal";
 import { EmailService } from "../services/emailService";
 import { PasswordHelper } from "../utils/passwordHelper";
 
-
 export interface IAuthenticationService {
   changePassword(req: Request, res: Response): Promise<void>;
 }

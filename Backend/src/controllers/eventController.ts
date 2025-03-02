@@ -76,7 +76,7 @@ class EventController {
       res.status(500).json({ message: "Server error" });
     }
   };
-
+    
   public updateEvent = async (req: AuthRequest, res: Response): Promise<void> => {
     const { 
       title,
