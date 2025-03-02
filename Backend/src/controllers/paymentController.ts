@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import EventService from "../services/eventAttendeeService";
+import EventAttendeeService from "services/eventAttendeeService";
 import PaymentGateway from "../paymentGateways/paymentGateway";
 import { EmailService } from "../services/emailService";
 import crypto from "crypto";
@@ -19,13 +19,13 @@ class PaymentService {
         return;
       }
 
-      const event = await EventService.getEventById(eventId);
+      const event = await EventAttendeeService.getEventById(eventId);
       if (!event) {
         res.status(404).json({ success: false, message: "Event not found" });
         return;
       }
 
-      if (EventService.isUserRegistered(event, userId)) {
+      if (EventAttendeeService.isUserRegistered(event, userId)) {
         res
           .status(400)
           .json({ success: false, message: "User is already registered." });
@@ -79,7 +79,7 @@ class PaymentService {
         return;
       }
 
-      const attendeeAdded = await EventService.addAttendee(eventId, userId);
+      const attendeeAdded = await EventAttendeeService.addAttendee(eventId, userId);
       if (!attendeeAdded.success) {
         res.status(500).json(attendeeAdded);
         return;
