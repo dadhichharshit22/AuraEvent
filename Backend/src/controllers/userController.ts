@@ -4,7 +4,7 @@ import { UserService } from "../services/userService";
 interface AuthRequest extends Request {
   user?: { id: string };
 }
-// get user data
+
 export const getUserProfile = async (
   req: AuthRequest,
   res: Response

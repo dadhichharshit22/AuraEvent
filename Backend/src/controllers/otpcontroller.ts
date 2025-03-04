@@ -11,8 +11,8 @@ export class OTPController {
     this.emailService = emailService;
   }
 
-  // Send OTP via email or sms
-  public sendOTP = async (req: Request, res: Response): Promise<void> => {
+  
+  public sendOtp = async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
 
     if (!email) {
@@ -34,9 +34,14 @@ export class OTPController {
     }
   };
 
-  // verify OTP
-  public verifyOTP = async (req: Request, res: Response): Promise<void> => {
+  
+  public verifyOtp = async (req: Request, res: Response): Promise<void> => {
     const { email, otp } = req.body;
+
+    if (!this.isValidEmail(email) || !otp) {
+      res.status(400).json({message:"Invalid email or OTP"});
+      return;
+    }
 
     try {
       const isValid = await this.otpService.verifyOTP(email, otp);
@@ -49,4 +54,7 @@ export class OTPController {
       res.status(500).json({ message: "Server error" });
     }
   };
+  private isValidEmail(email?: string): boolean {
+    return !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
 }

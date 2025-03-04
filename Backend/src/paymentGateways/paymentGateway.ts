@@ -1,4 +1,4 @@
-import { instance } from "../config/razorpayConnection";
+import { razorpayInstance } from "../config/razorpayConnection";
 
 class PaymentGateway {
   static async createOrder(amount: number) {
@@ -8,7 +8,7 @@ class PaymentGateway {
       receipt: Math.random().toString(),
     };
 
-    return await instance.orders.create(options);
+    return await razorpayInstance.orders.create(options);
   }
 }
 

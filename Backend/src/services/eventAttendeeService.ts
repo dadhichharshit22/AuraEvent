@@ -1,7 +1,7 @@
 import { Event } from "../models/eventModal";
 import mongoose from "mongoose";
 
-class EventService {
+class EventAttendeeService {
   static async getEventById(eventId: string) {
     return await Event.findById(eventId);
   }
@@ -30,4 +30,4 @@ class EventService {
   }
 }
 
-export default EventService;
+export default EventAttendeeService;

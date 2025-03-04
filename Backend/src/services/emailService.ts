@@ -45,6 +45,31 @@ export class EmailService {
     }
   }
 
+  async sendBulkEmailNotification(
+    emails: string[],
+    subject: string,
+    htmlGenerator: (
+      title: string,
+      date: string,
+      description?: string
+    ) => string,
+    title: string,
+    date: string,
+    description?: string
+  ): Promise<void> {
+    await Promise.all(
+      emails.map((email) =>
+        this.sendMail(
+          email,
+          subject,
+          htmlGenerator(title, date, description)
+        ).catch((error) =>
+          console.error(`Failed to send notification to ${email}:`, error)
+        )
+      )
+    );
+  }
+
   async sendWelcomeEmail(name: string, email: string): Promise<void> {
     const html = userRegistrationTemplate(name);
     await this.sendMail(email, "Welcome to Event Management", html);

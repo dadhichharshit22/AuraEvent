@@ -8,9 +8,9 @@ const otpService = new OTPService();
 const otpController = new OTPController(otpService, emailService);
 
 const router = Router();
-// send a OTP
-router.post("/send-otp", otpController.sendOTP);
-// Verify a OTP
-router.post("/verify-otp", otpController.verifyOTP);
+
+router.post("/send-otp", otpController.sendOtp);
+
+router.post("/verify-otp", otpController.verifyOtp);
 
 export default router;
