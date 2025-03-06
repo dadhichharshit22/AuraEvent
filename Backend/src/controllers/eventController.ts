@@ -55,7 +55,7 @@ class EventController {
         );
       }
 
-    
+      
       const users = await User.find();
       await Promise.all(
         users.map(user =>
@@ -110,7 +110,7 @@ class EventController {
         return;
       }
 
-  
+      
       const attendeeUsers = await User.find({
         _id: { $in: event.attendees }
       });
@@ -134,7 +134,7 @@ class EventController {
     }
   };
 
-  public registerUserForEvent = async (req: Request, res: Response): Promise<void> => {
+  public registerEvent = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.body;
     const { id } = req.params;
 
@@ -168,7 +168,7 @@ class EventController {
     }
   };
 
-  public unregisterUserFromEvent = async (req: Request, res: Response): Promise<void> => {
+  public unregisterEvent = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.body;
     const { id } = req.params;
 

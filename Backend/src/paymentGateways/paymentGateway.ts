@@ -1,14 +1,30 @@
 import { razorpayInstance } from "../config/razorpayConnection";
 
 class PaymentGateway {
-  static async createOrder(amount: number) {
-    const options = {
-      amount: amount * 100,
-      currency: "INR",
-      receipt: Math.random().toString(),
-    };
+  private static readonly CURRENCY = "INR";
+  private static readonly CONVERSION_RATE = 100; 
 
-    return await razorpayInstance.orders.create(options);
+  static async createOrder(amount: number): Promise<{ id: string; status: string }> {
+    try {
+      const options = this.getOrderOptions(amount);
+      const order = await razorpayInstance.orders.create(options);
+      return order;
+    } catch (error) {
+      console.error("Error creating Razorpay order:", error);
+      throw new Error("Payment order creation failed");
+    }
+  }
+
+  private static getOrderOptions(amount: number) {
+    return {
+      amount: amount * this.CONVERSION_RATE, 
+      currency: this.CURRENCY,
+      receipt: this.generateReceiptId(),
+    };
+  }
+
+  private static generateReceiptId(): string {
+    return `receipt_${Date.now()}`;
   }
 }
 
