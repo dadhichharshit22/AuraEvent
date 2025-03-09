@@ -1,16 +1,19 @@
-import { OTPService } from "../services/otpService";
-import { OTPController } from "../controllers/otpcontroller";
-import { EmailService } from "../services/emailService";
 import { Router } from "express";
-
-const emailService = new EmailService();
-const otpService = new OTPService();
-const otpController = new OTPController(otpService, emailService);
+import { OTPController } from "../controllers/otpcontroller";
+import { OTPService } from "../services/otpService";
+import { EmailService } from "../services/emailService";
+import { OTPRepository } from "../repositories/otpRepositories";
 
 const router = Router();
 
-router.post("/send-otp", otpController.sendOtp);
+// Instantiate dependencies
+const emailService = new EmailService();
+const otpRepository = new OTPRepository();
+const otpService = new OTPService(otpRepository, emailService);
+const otpController = new OTPController(otpService);
 
-router.post("/verify-otp", otpController.verifyOtp);
+// Define routes
+router.post("/request-otp", (req, res) => otpController.requestOTP(req, res));
+router.post("/verify-otp", (req, res) => otpController.verifyOTP(req, res));
 
 export default router;

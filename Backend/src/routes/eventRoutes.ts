@@ -16,8 +16,8 @@ router.get('/registered', authMiddleware, EventController.getRegisteredEvents);
 router.get('/:id', authMiddleware, EventController.getEventById);
 router.put('/:id', authMiddleware, EventController.updateEvent);
 router.delete('/:id', authMiddleware, EventController.deleteEvent);
-router.post('/:id/register', authMiddleware, EventController.registerUserForEvent);
-router.post('/:id/unregister', authMiddleware, EventController.unregisterUserFromEvent);
+router.post('/:id/register', authMiddleware, EventController.registerEvent);
+router.post('/:id/unregister', authMiddleware, EventController.unregisterEvent);
 
 router.get('/', authMiddleware, EventController.getAllEvents);
 
