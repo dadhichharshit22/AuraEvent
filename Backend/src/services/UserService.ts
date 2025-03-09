@@ -1,15 +1,13 @@
-import User, { IUser } from "../models/userModal";
+import { UserRepository } from "../repositories/userRepositories";
 
 export class UserService {
-  public static async getUserById(id: string): Promise<IUser | null> {
-    try {
-      const user = await User.findById(id);
-      if (!user) {
-        return null;
-      }
-      return user;
-    } catch (error) {
-      throw new Error("Error fetching user from database");
-    }
+  private userRepository: UserRepository;
+
+  constructor(userRepository: UserRepository) {
+    this.userRepository = userRepository;
+  }
+
+  async getUserById(userId: string) {
+    return await this.userRepository.findById(userId);
   }
 }
