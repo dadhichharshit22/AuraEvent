@@ -45,7 +45,7 @@ class EventController {
 
       const savedEvent = await newEvent.save();
 
-    
+      
       if (req.user?.email) {
         await this.emailService.sendEventCreationEmail(
           req.user.email,
@@ -76,7 +76,7 @@ class EventController {
       res.status(500).json({ message: "Server error" });
     }
   };
-    
+
   public updateEvent = async (req: AuthRequest, res: Response): Promise<void> => {
     const { 
       title,

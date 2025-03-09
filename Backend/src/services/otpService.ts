@@ -1,20 +1,24 @@
-import OTP from "../models/otpModal";
+import { OTPRepository } from "../repositories/otpRepositories";
+import { EmailService } from "../services/emailService";
 import crypto from "crypto";
 
 export class OTPService {
-  public generateOTP(): string {
+  constructor(
+    private otpRepository: OTPRepository,
+    private emailService: EmailService
+  ) {}
+
+  private generateOTP(): string {
     return crypto.randomInt(100000, 999999).toString();
   }
 
-  public async saveOTP(email: string, otp: string): Promise<void> {
-    await OTP.deleteMany({ email });
-    await OTP.create({ email, otp });
+  public async generateAndSendOTP(email: string): Promise<void> {
+    const otp = this.generateOTP();
+    await this.otpRepository.saveOTP(email, otp);
+    await this.emailService.sendOTPEmail(email, otp);
   }
 
   public async verifyOTP(email: string, otp: string): Promise<boolean> {
-    const storedOTP = await OTP.findOne({ email, otp });
-    if (!storedOTP) return false;
-    await OTP.deleteMany({ email });
-    return true;
+    return await this.otpRepository.verifyOTP(email, otp);
   }
 }

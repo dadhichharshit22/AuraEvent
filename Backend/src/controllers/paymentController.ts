@@ -1,112 +1,125 @@
 import { Request, Response } from "express";
-import EventAttendeeService from "services/eventAttendeeService";
-import PaymentGateway from "../paymentGateways/paymentGateway";
-import { EmailService } from "../services/emailService";
-import crypto from "crypto";
+import { PaymentService } from "../services/paymentService";
 
-class PaymentService {
-  constructor(private emailService: EmailService) {}
+/**
+ * Handles payment-related actions such as capturing and verifying payments.
+ */
+export class PaymentController {
+  constructor(private paymentService: PaymentService) {}
 
+  // ──────────────────────────────────────────────────────────────────────
+  // ░░░░░░░░░░░░░░░ PUBLIC METHODS ░░░░░░░░░░░░░░░
+  // ──────────────────────────────────────────────────────────────────────
+
+  /**
+   * Captures a payment for an event.
+   */
   public async capturePayment(req: Request, res: Response): Promise<void> {
     try {
-      console.log("Request body:", req.body);
-      const { eventId, userId }: { eventId: string; userId: string } = req.body;
+      const eventDetails = this.getEventDetails(req, res);
+      if (!eventDetails) return;
 
-      if (!eventId) {
-        res
-          .status(400)
-          .json({ success: false, message: "Please provide Event Id" });
-        return;
-      }
+      const { eventId, userId } = eventDetails;
+      const confirmation = await this.paymentService.capturePayment(eventId, userId);
 
-      const event = await EventAttendeeService.getEventById(eventId);
-      if (!event) {
-        res.status(404).json({ success: false, message: "Event not found" });
-        return;
-      }
-
-      if (EventAttendeeService.isUserRegistered(event, userId)) {
-        res
-          .status(400)
-          .json({ success: false, message: "User is already registered." });
-        return;
-      }
-
-      const totalAmount = event.price || 0;
-      const paymentResponse = await PaymentGateway.createOrder(totalAmount);
-
-      console.log("Payment Response:", paymentResponse);
-      res.json({ success: true, message: paymentResponse });
+      this.sendSuccessResponse(res, this.formatPaymentConfirmation(confirmation));
     } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ success: false, message: "Could not initiate order" });
+      this.handleError(res, "Payment capture failed", error);
     }
   }
 
+  /**
+   * Verifies payment details and confirms event registration.
+   */
   public async verifyPayment(req: Request, res: Response): Promise<void> {
     try {
-      const {
+      const paymentDetails = this.getPaymentDetails(req, res);
+      if (!paymentDetails) return;
+
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature, eventId, userId } = paymentDetails;
+      const verificationResult = await this.paymentService.verifyPayment(
         razorpay_order_id,
         razorpay_payment_id,
         razorpay_signature,
         eventId,
-        userId,
-      } = req.body;
+        userId
+      );
 
-      if (
-        !razorpay_order_id ||
-        !razorpay_payment_id ||
-        !razorpay_signature ||
-        !eventId ||
-        !userId
-      ) {
-        res.status(400).json({ success: false, message: "Payment Failed" });
-        return;
+      if (!verificationResult.success) {
+         this.sendErrorResponse(res, "Payment verification failed", 400);
       }
 
-      if (
-        !PaymentService.isPaymentValid(
-          razorpay_order_id,
-          razorpay_payment_id,
-          razorpay_signature
-        )
-      ) {
-        res
-          .status(400)
-          .json({ success: false, message: "Payment verification failed" });
-        return;
-      }
-
-      const attendeeAdded = await EventAttendeeService.addAttendee(eventId, userId);
-      if (!attendeeAdded.success) {
-        res.status(500).json(attendeeAdded);
-        return;
-      }
-
-      res.status(200).json({ success: true, message: "Payment Verified" });
+      this.sendSuccessResponse(res, "Payment verified successfully.");
     } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ success: false, message: "Internal Server Error" });
+      this.handleError(res, "Payment verification failed", error);
     }
   }
 
-  private static isPaymentValid(
-    orderId: string,
-    paymentId: string,
-    signature: string
-  ): boolean {
-    const body = `${orderId}|${paymentId}`;
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_SECRET || "")
-      .update(body)
-      .digest("hex");
+  // ──────────────────────────────────────────────────────────────────────
+  // ░░░░░░░░░░░░░░░ PRIVATE METHODS ░░░░░░░░░░░░░░░
+  // ──────────────────────────────────────────────────────────────────────
 
-    return expectedSignature === signature;
+  /**
+   * Extracts event and user details from the request.
+   * Returns null if validation fails.
+   */
+  private getEventDetails(req: Request, res: Response): { eventId: string; userId: string } | null {
+    const { eventId, userId } = req.body;
+
+    if (!eventId || !userId) {
+      return this.sendErrorResponse(res, "Event ID and User ID are required", 400);
+    }
+
+    return { eventId, userId };
+  }
+
+  /**
+   * Extracts payment details from the request.
+   * Returns null if validation fails.
+   */
+  private getPaymentDetails(
+    req: Request,
+    res: Response
+  ): { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string; eventId: string; userId: string } | null {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, eventId, userId } = req.body;
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !eventId || !userId) {
+      return this.sendErrorResponse(res, "All payment details are required", 400);
+    }
+
+    return { razorpay_order_id, razorpay_payment_id, razorpay_signature, eventId, userId };
+  }
+
+  /**
+   * Formats the payment confirmation response.
+   */
+  private formatPaymentConfirmation(confirmation: string | { id: string; status: string }): string {
+    return typeof confirmation === "string"
+      ? confirmation
+      : `Payment successful: ${confirmation.id}, Status: ${confirmation.status}`;
+  }
+
+  /**
+   * Sends a success response.
+   */
+  private sendSuccessResponse(res: Response, message: string): void {
+    res.status(200).json({ success: true, message });
+  }
+
+  /**
+   * Sends an error response with a specific status code.
+   */
+  private sendErrorResponse(res: Response, message: string, statusCode: number = 500): null {
+    res.status(statusCode).json({ success: false, message });
+    return null;
+  }
+
+  /**
+   * Logs errors and sends an appropriate error response.
+   */
+  private handleError(res: Response, logMessage: string, error: unknown): void {
+    console.error(logMessage, error);
+    const errorMessage = error instanceof Error ? error.message : "Unexpected error occurred";
+    this.sendErrorResponse(res, errorMessage);
   }
 }
-
-export default PaymentService;

@@ -17,6 +17,9 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event, onExplore }) => {
+  // const categories = event?.category
+  // ? event.category.split(",").map((category: string) => category.trim())
+  // : [];
   console.log(event);
 
   return (

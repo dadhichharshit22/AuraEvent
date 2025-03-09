@@ -50,7 +50,7 @@ npm install
 MONGO_URI = mongodb://localhost:27017/<your db name>
 JWT_SECRET = secret_key
 PORT = 8085
-EMAIL_USER = your email_id
+EMAIL_USERNAME = your email_id
 EMAIL_PASSWORD = your_password
 RAZORPAY_KEY = your razorpay key
 RAZORPAY_SECRET = your razorpay secret key

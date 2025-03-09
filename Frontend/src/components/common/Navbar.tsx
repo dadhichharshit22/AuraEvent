@@ -55,6 +55,14 @@ const Navbar: React.FC<NavbarProps> = ({
       </h1>
       {isHomePage && <EventSearch onSearch={onSearch} />}
       <div className="flex items-center space-x-6">
+        {/* <Link to="/" className="text-xl text-white hover:underline">
+          Home
+        </Link>
+        {isRegistered && (
+          <Link to="/dashboard" className="text-xl text-white hover:underline">
+            Dashboard
+          </Link>
+        )} */}
         {isRegistered ? (
           <>
             <Button onClick={() => navigate("/create-event")}>

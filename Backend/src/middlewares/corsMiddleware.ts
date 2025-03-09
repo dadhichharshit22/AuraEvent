@@ -1,10 +1,10 @@
 import cors from "cors";
 
-const getCorsOptions = () => ({
-  origin: process.env.CORS_ORIGIN?.split(",") || ["http://localhost:5173"],
+const corsOptions = {
+  origin: ["http://localhost:5173"],
   credentials: true,
-});
+};
 
-const corsMiddleware = cors(getCorsOptions());
+const corsMiddleware = cors(corsOptions);
 
 export default corsMiddleware;

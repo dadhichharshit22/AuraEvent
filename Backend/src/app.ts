@@ -1,7 +1,6 @@
 
 import express from 'express';
-import cors from 'cors';
-import connectDB from './config/databaseConnection';
+import connectDataBase from './config/databaseConnection';
 import authRoutes from './routes/authRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import userRoutes from './routes/userRoutes';
@@ -10,7 +9,7 @@ import otpRoutes from './routes/otpRoutes';
 import corsMiddleware from './middlewares/corsMiddleware';
 const app = express();
 
-connectDB();
+connectDataBase();
 
 
 app.use(corsMiddleware); 

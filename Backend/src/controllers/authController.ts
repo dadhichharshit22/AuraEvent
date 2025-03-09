@@ -1,24 +1,37 @@
 import { Request, Response } from "express";
-import { RegistrationService } from "../services/registrationService";
-import { LoginService } from "../services/loginService";
-import { PasswordChangeService } from "../services/passwordChangeService";
+import { AuthService } from "../services/authService";
 
 export class AuthenticationController {
-  constructor(
-    private registrationService: RegistrationService,
-    private loginService: LoginService,
-    private passwordChangeService: PasswordChangeService
-  ) {}
+  constructor(private authService: AuthService) {}
+
+  private getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : "An unknown error occurred";
+  }
 
   public async register(req: Request, res: Response): Promise<void> {
-    await this.registrationService.register(req, res);
+    try {
+      const token = await this.authService.register(req.body);
+      res.status(201).json({ success: true, token });
+    } catch (error) {
+      res.status(500).json({ message: this.getErrorMessage(error) });
+    }
   }
 
   public async login(req: Request, res: Response): Promise<void> {
-    await this.loginService.login(req, res);
+    try {
+      const token = await this.authService.login(req.body);
+      res.status(200).json({ success: true, token });
+    } catch (error) {
+      res.status(400).json({ message: this.getErrorMessage(error) });
+    }
   }
 
   public async changePassword(req: Request, res: Response): Promise<void> {
-    await this.passwordChangeService.changePassword(req, res);
+    try {
+      await this.authService.changePassword(req.body);
+      res.status(200).json({ success: true, message: "Password updated" });
+    } catch (error) {
+      res.status(400).json({ message: this.getErrorMessage(error) });
+    }
   }
 }

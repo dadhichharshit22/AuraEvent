@@ -33,7 +33,7 @@ export async function payEventFee(
     console.log("eventId", eventId);
     console.log("token", token);
     console.log("userDetails", userDetails);
-  
+    // Initiate the order
     const orderResponse = await axios.post(
       `http://localhost:8085/api/pay/capturePayment`,
       { eventId },
@@ -47,7 +47,7 @@ export async function payEventFee(
     }
 
     console.log("orderResponse", orderResponse);
-    
+    // Razorpay options
     const options = {
       key: RAZORPAY_KEY,
       currency: orderResponse.data.message.currency,

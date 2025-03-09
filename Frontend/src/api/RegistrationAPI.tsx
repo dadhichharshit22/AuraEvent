@@ -6,7 +6,7 @@ const API_BASE_URL = "http://localhost:8085/api";
 export class AuthService {
   static async sendOTP(email: string): Promise<void> {
     try {
-      await axios.post(`${API_BASE_URL}/otp/send-otp`, { email });
+      await axios.post(`${API_BASE_URL}/otp/request-otp`, { email });
     } catch (error) {
       console.error("Error sending OTP:", error);
       throw new Error("Error sending OTP. Please try again.");

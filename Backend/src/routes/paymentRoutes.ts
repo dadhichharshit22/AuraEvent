@@ -1,21 +1,17 @@
-import express from "express";
-import PaymentService from "../controllers/paymentController";
-import { authMiddleware } from "../middlewares/authMiddleware";
+import { Router } from "express";
+import { PaymentController } from "../controllers/paymentController";
+import { PaymentService } from "../services/paymentService";
+import { PaymentRepository } from "../repositories/paymentReporitories";
 import { EmailService } from "../services/emailService";
 
-const router = express.Router();
-const emailService = new EmailService();
-const paymentService = new PaymentService(emailService);
+const router = Router();
 
-router.post(
-  "/capturePayment",
-  authMiddleware,
-  paymentService.capturePayment.bind(paymentService)
-);
-router.post(
-  "/verifyPayment",
-  authMiddleware,
-  paymentService.verifyPayment.bind(paymentService)
-);
+const paymentRepository = new PaymentRepository();
+const emailService = new EmailService();
+const paymentService = new PaymentService(paymentRepository, emailService);
+const paymentController = new PaymentController(paymentService);
+
+router.post("/capturePayment", (req, res) => paymentController.capturePayment(req, res));
+router.post("/verifyPayment", (req, res) => paymentController.verifyPayment(req, res));
 
 export default router;
