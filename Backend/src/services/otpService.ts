@@ -15,7 +15,7 @@ export class OTPService {
   public async generateAndSendOTP(email: string): Promise<void> {
     const otp = this.generateOTP();
     await this.otpRepository.saveOTP(email, otp);
-    await this.emailService.sendOTPEmail(email, otp);
+    await this.emailService.sendOtpEmail(email, otp);
   }
 
   public async verifyOTP(email: string, otp: string): Promise<boolean> {

@@ -7,7 +7,6 @@ import { PaymentService } from "../services/paymentService";
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
-
   /**
    * Captures a payment for an event.
    */
@@ -34,17 +33,15 @@ export class PaymentController {
       if (!paymentDetails) return;
 
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature, eventId, userId } = paymentDetails;
-      const verificationResult = await this.paymentService.verifyPayment(
+      
+      // Call verifyPayment but don't check .success (because it returns void)
+      await this.paymentService.verifyPayment(
         razorpay_order_id,
         razorpay_payment_id,
         razorpay_signature,
         eventId,
         userId
       );
-
-      if (!verificationResult.success) {
-         this.sendErrorResponse(res, "Payment verification failed", 400);
-      }
 
       this.sendSuccessResponse(res, "Payment verified successfully.");
     } catch (error) {
@@ -64,7 +61,8 @@ export class PaymentController {
     const { eventId, userId } = req.body;
 
     if (!eventId || !userId) {
-      return this.sendErrorResponse(res, "Event ID and User ID are required", 400);
+      this.sendErrorResponse(res, "Event ID and User ID are required", 400);
+      return null;
     }
 
     return { eventId, userId };
@@ -81,7 +79,8 @@ export class PaymentController {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, eventId, userId } = req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !eventId || !userId) {
-      return this.sendErrorResponse(res, "All payment details are required", 400);
+      this.sendErrorResponse(res, "All payment details are required", 400);
+      return null;
     }
 
     return { razorpay_order_id, razorpay_payment_id, razorpay_signature, eventId, userId };
@@ -106,9 +105,8 @@ export class PaymentController {
   /**
    * Sends an error response with a specific status code.
    */
-  private sendErrorResponse(res: Response, message: string, statusCode: number = 500): null {
+  private sendErrorResponse(res: Response, message: string, statusCode: number = 500): void {
     res.status(statusCode).json({ success: false, message });
-    return null;
   }
 
   /**

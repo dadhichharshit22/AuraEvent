@@ -1,8 +1,8 @@
-import { Event } from "../models/eventModel";
 import mongoose from "mongoose";
+import { EventRepository } from "../repositories/eventAttendeeRepositories";
 
 /**
- * Custom error classes for better error handling.
+ * Custom error class for when an event is not found.
  */
 class EventNotFoundError extends Error {
   constructor() {
@@ -11,6 +11,9 @@ class EventNotFoundError extends Error {
   }
 }
 
+/**
+ * Custom error class for when a user is already registered.
+ */
 class UserAlreadyRegisteredError extends Error {
   constructor() {
     super("User is already registered");
@@ -18,31 +21,35 @@ class UserAlreadyRegisteredError extends Error {
   }
 }
 
+/**
+ * Service for managing event attendees.
+ */
 class EventAttendeeService {
-  /**
-   * Registers a user for an event if they are not already registered.
-   * Throws appropriate exceptions instead of returning error objects.
-   */
-  static async registerAttendee(eventId: string, userId: string) {
-    const event = await this.getEventWithAttendeeCheck(eventId, userId);
-    if (!event) throw new EventNotFoundError();
-    if (event.isAttendee(userId)) throw new UserAlreadyRegisteredError();
+  private eventRepository: EventRepository;
 
-    await event.addAttendee(userId);
-    return { success: true, message: "Attendee successfully registered" };
+  constructor(eventRepository: EventRepository) {
+    this.eventRepository = eventRepository;
   }
 
   /**
-   * Fetches an event and ensures its existence before processing.
+   * Registers a user for an event if they are not already registered.
+   * Throws exceptions instead of returning error objects.
    */
-  private static async getEventWithAttendeeCheck(eventId: string, userId: string) {
-    const event = await Event.findById(eventId);
-    return event ? new EventWrapper(event) : null;
+  async registerAttendee(eventId: string, userId: string): Promise<void> {
+    const event = await this.eventRepository.findById(eventId);
+    if (!event) throw new EventNotFoundError();
+
+    const wrappedEvent = new EventWrapper(event);
+
+    if (wrappedEvent.hasAttendee(userId)) throw new UserAlreadyRegisteredError();
+
+    wrappedEvent.addAttendee(userId);
+    await this.eventRepository.save(event);
   }
 }
 
 /**
- * Wrapper for the Event model that encapsulates behavior.
+ * Wrapper class for an Event document to encapsulate behavior.
  */
 class EventWrapper {
   private event: any;
@@ -51,16 +58,22 @@ class EventWrapper {
     this.event = event;
   }
 
-  isAttendee(userId: string): boolean {
+  /**
+   * Checks if a user is already registered for the event.
+   */
+  hasAttendee(userId: string): boolean {
+    const userObjectId = new mongoose.Types.ObjectId(userId);
     return this.event.attendees.some((attendeeId: mongoose.Types.ObjectId) =>
-      attendeeId.equals(new mongoose.Types.ObjectId(userId))
+      attendeeId.equals(userObjectId)
     );
   }
 
-  async addAttendee(userId: string) {
+  /**
+   * Adds an attendee to the event.
+   */
+  addAttendee(userId: string) {
     this.event.attendees.push(new mongoose.Types.ObjectId(userId));
-    await this.event.save();
   }
 }
 
-export default EventAttendeeService;
+export { EventAttendeeService, EventNotFoundError, UserAlreadyRegisteredError, EventWrapper };
