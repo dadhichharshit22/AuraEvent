@@ -5,36 +5,91 @@ interface AuthRequest extends Request {
   user?: { id: string };
 }
 
+/**
+ * Controller responsible for handling user-related requests.
+ */
 export class UserController {
-  private userService: UserService;
+  constructor(private readonly userService: UserService) {}
 
-  constructor(userService: UserService) {
-    this.userService = userService;
-  }
-
-  async getUserProfile(req: AuthRequest, res: Response): Promise<void> {
-    const userId = req.user?.id;
-
-    if (!userId) {
-      res.status(400).json({ message: "User ID is required" });
-      return;
-    }
+  /**
+   * Handles a request to fetch the user profile.
+   *
+   * @param req - The HTTP request object, which may contain an authenticated user.
+   * @param res - The HTTP response object.
+   */
+  async handleGetUserProfile(req: AuthRequest, res: Response): Promise<void> {
+    if (!this.hasValidUser(req)) return this.respondWithBadRequest(res);
 
     try {
-      const user = await this.userService.getUserById(userId);
-
-      if (!user) {
-        res.status(404).json({ message: "User not found" });
-        return;
-      }
-
-      res.status(200).json(user);
+      const user = await this.fetchUserById(req.user!.id);
+      this.respondWithSuccess(res, user);
     } catch (error) {
-      console.error("Error fetching user profile:", error);
-      res.status(500).json({
-        message: "Internal Server Error",
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
+      this.handleError(res, error);
     }
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────────
+  //  Validation Methods
+  // ───────────────────────────────────────────────────────────────────────────────
+
+  /** Checks if the request contains a valid user ID. */
+  private hasValidUser(req: AuthRequest): boolean {
+    return !!req.user?.id;
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────────
+  //  Business Logic Methods
+  // ───────────────────────────────────────────────────────────────────────────────
+
+  /** Retrieves a user by ID from the service layer. Throws an error if the user is not found. */
+  private async fetchUserById(userId: string) {
+    const user = await this.userService.getUserById(userId);
+    if (!user) throw new UserNotFoundError();
+    return user;
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────────
+  //  Error Handling Methods
+  // ───────────────────────────────────────────────────────────────────────────────
+
+  /** Handles errors gracefully and sends appropriate responses. */
+  private handleError(res: Response, error: unknown): void {
+    if (error instanceof UserNotFoundError) {
+      return this.respondWithError(res, 404, error.message);
+    }
+
+    console.error("Error fetching user profile:", error);
+    this.respondWithError(res, 500, "Internal Server Error", error);
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────────
+  //  Response Handling Methods
+  // ───────────────────────────────────────────────────────────────────────────────
+
+  /** Sends a 200 OK response with the user data. */
+  private respondWithSuccess(res: Response, user: unknown): void {
+    res.status(200).json(user);
+  }
+
+  /** Sends a 400 Bad Request response when the user ID is missing. */
+  private respondWithBadRequest(res: Response): void {
+    this.respondWithError(res, 400, "User ID is required");
+  }
+
+  /** Sends an error response with the given status and message. */
+  private respondWithError(res: Response, status: number, message: string, error?: unknown): void {
+    res.status(status).json({
+      message,
+      error: error instanceof Error ? error.message : undefined,
+    });
+  }
+}
+
+/**
+ * Custom error class for handling user-not-found scenarios.
+ */
+class UserNotFoundError extends Error {
+  constructor() {
+    super("User not found");
   }
 }
