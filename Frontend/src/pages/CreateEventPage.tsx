@@ -27,31 +27,27 @@ const CreateEvent: React.FC = () => {
   const navigate = useNavigate();
   const { formData, updateFormData, handleSubmit, eventData } = useEventForm();
 
+  const handleNavigate = () => navigate("/dashboard/manage-events");
+
+  const pageTitle = eventData?._id ? "Edit event" : "Create new event";
+  const submitButtonText = eventData?._id ? "Save changes" : "Create event";
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/dashboard/manage-events")}
-            >
+            <Button variant="ghost" size="icon" onClick={handleNavigate}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-semibold">
-              {eventData?._id ? "Edit event" : "Create new event"}
-            </h1>
+            <h1 className="text-2xl font-semibold">{pageTitle}</h1>
           </div>
         </div>
 
-        
         <Card className="border-none w-full">
           <div className="w-full flex justify-end">
-            <Button onClick={handleSubmit}>
-              {eventData?._id ? "Save changes" : "Publish event"}
-            </Button>
+            <Button onClick={handleSubmit}>{submitButtonText}</Button>
           </div>
           <CardContent className="p-6">
             <Accordion type="single" collapsible defaultValue="info">

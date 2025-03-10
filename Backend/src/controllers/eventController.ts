@@ -47,7 +47,7 @@ class EventController {
 
       
       if (req.user?.email) {
-        await this.emailService.sendEventCreationEmail(
+        await this.emailService.notifyEventCreation(
           req.user.email,
           title,
           date.toString(),
@@ -59,7 +59,7 @@ class EventController {
       const users = await User.find();
       await Promise.all(
         users.map(user =>
-          this.emailService.sendNewEventNotification(
+          this.emailService.notifyNewEvent(
             user.email,
             title,
             date.toString(),
@@ -117,7 +117,7 @@ class EventController {
 
       await Promise.all(
         attendeeUsers.map(user =>
-          this.emailService.sendEventUpdateEmail(
+          this.emailService.notifyEventUpdate(
             user.email,
             title,
             date.toString(),
@@ -155,7 +155,7 @@ class EventController {
 
       const user = await User.findById(userId);
       if (user) {
-        await this.emailService.sendEventRegistrationEmail(
+        await this.emailService.confirmRegistration(
           user.email,
           event.title,
           event.date.toString()
@@ -191,7 +191,7 @@ class EventController {
 
       const user = await User.findById(userId);
       if (user) {
-        await this.emailService.sendEventUnregistrationEmail(
+        await this.emailService.confirmUnregistration(
           user.email,
           event.title,
           event.date.toString()

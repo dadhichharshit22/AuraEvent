@@ -7,9 +7,6 @@ import { PaymentService } from "../services/paymentService";
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
-  // ──────────────────────────────────────────────────────────────────────
-  // ░░░░░░░░░░░░░░░ PUBLIC METHODS ░░░░░░░░░░░░░░░
-  // ──────────────────────────────────────────────────────────────────────
 
   /**
    * Captures a payment for an event.
