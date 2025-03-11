@@ -1,13 +1,28 @@
 import bcrypt from "bcryptjs";
 
-export class PasswordHelper {
-  private static readonly SALT_ROUNDS = 10;
+ class PasswordService {
+  private readonly saltRounds: number;
 
-  static encryptPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, this.SALT_ROUNDS);
+  constructor(saltRounds: number = 10) {
+    this.saltRounds = saltRounds;
   }
 
-  static verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(password, hashedPassword);
+  public async hashPassword(password: string): Promise<string> {
+    try {
+      return await bcrypt.hash(password, this.saltRounds);
+    } catch (error) {
+      throw new Error("Failed to hash password.");
+    }
+  }
+
+  public async comparePasswords(password: string, hashedPassword: string): Promise<boolean> {
+    try {
+      return await bcrypt.compare(password, hashedPassword);
+    } catch (error) {
+      throw new Error("Password comparison failed.");
+    }
   }
 }
+
+
+export default PasswordService;

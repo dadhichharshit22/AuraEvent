@@ -1,9 +1,17 @@
 import jwt from "jsonwebtoken";
 
 export class TokenService {
-  private secret = process.env.JWT_SECRET || "default_secret";
+  private readonly jwtSecret: string;
 
-  public createToken(userId: string): string {
-    return jwt.sign({ userId }, this.secret, { expiresIn: "24h" });
+  constructor(secret: string = process.env.JWT_SECRET || "Harshit") {
+    this.jwtSecret = secret;
+  }
+
+  public generateAuthToken(userId: string): string {
+    try {
+      return jwt.sign({ userId }, this.jwtSecret, { expiresIn: "24h" });
+    } catch (error) {
+      throw new Error("Failed to generate authentication token.");
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { UserRepository } from "../repositories/authRepositories";
-import { PasswordHelper } from "../utils/passwordHelper";
+import  PasswordService  from "../utils/passwordHelper";
 import jwt from "jsonwebtoken";
 import {LoginCredentials,RegistrationData,PasswordChangeRequest} from "../types/authTypes";
 
@@ -15,7 +15,7 @@ export class AuthService {
 
     await this.ensureUserDoesNotExist(email, username);
 
-    const hashedPassword = await PasswordHelper.encryptPassword(password); // ✅ Use static method directly
+    const hashedPassword = await PasswordService.hashPassword(password); // ✅ Use static method directly
 
     const newUser = await this.userRepository.createUser({
       name,
@@ -32,7 +32,7 @@ export class AuthService {
     this.validateLoginCredentials(credentials);
 
     const user = await this.userRepository.findByEmail(credentials.email);
-    if (!user || !(await PasswordHelper.verifyPassword(credentials.password, user.password))) {
+    if (!user || !(await PasswordService.verifyPassword(credentials.password, user.password))) {
       throw new Error("Invalid email or password.");
     }
 
@@ -47,7 +47,7 @@ export class AuthService {
       throw new Error("User not found.");
     }
 
-    const hashedPassword = await PasswordHelper.encryptPassword(request.newPassword); 
+    const hashedPassword = await PasswordService.hashPassword(request.newPassword); 
     await this.userRepository.updatePassword(request.email, hashedPassword);
   }
 

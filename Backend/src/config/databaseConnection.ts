@@ -5,7 +5,7 @@ dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/Event";
 
-const connectDataBase = async (): Promise<void> => {
+const connectDatabase = async (): Promise<void> => {
   try {
     await mongoose.connect(MONGO_URI);
     console.log("MongoDB connected...");
@@ -15,4 +15,4 @@ const connectDataBase = async (): Promise<void> => {
   }
 };
 
-export default connectDataBase;
+export default connectDatabase;
