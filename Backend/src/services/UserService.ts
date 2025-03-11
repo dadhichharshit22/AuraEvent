@@ -1,5 +1,6 @@
 import { UserRepository } from "../repositories/userRepositories";
 
+// Service responsible for the User
 export class UserService {
   private userRepository: UserRepository;
 

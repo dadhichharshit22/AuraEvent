@@ -1,9 +1,8 @@
 import { Event } from "../models/eventModal";
 import { EventWrapper } from "../services/eventAttendeeService";
 
-/**
- * Repository for handling event data persistence.
- */
+// Repository for handling event data persistence.
+ 
 class EventRepository {
   async findById(eventId: string): Promise<EventWrapper | null> {
     const event = await Event.findById(eventId);
@@ -11,7 +10,7 @@ class EventRepository {
   }
 
   async save(event: EventWrapper): Promise<void> {
-    await event["event"].save(); // Access the event object inside the wrapper and save it
+    await event["event"].save(); 
   }
 }
 

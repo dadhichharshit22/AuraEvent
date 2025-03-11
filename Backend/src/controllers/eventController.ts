@@ -8,13 +8,14 @@ interface AuthRequest extends Request {
   user?: IUser;
 }
 
+// Controller of Controlling all the operation of Event
 class EventController {
   private emailService: EmailService;
 
   constructor() {
     this.emailService = new EmailService();
   }
-
+  // Handle Create Event
   public createEvent = async (req: AuthRequest, res: Response): Promise<void> => {
     const { 
       title, 
@@ -77,6 +78,7 @@ class EventController {
     }
   };
 
+   // Handle Update Event
   public updateEvent = async (req: AuthRequest, res: Response): Promise<void> => {
     const { 
       title,
@@ -133,7 +135,7 @@ class EventController {
       res.status(500).json({ message: "Server error" });
     }
   };
-
+    // Handle register User For Event
   public registerForEvent = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.body;
     const { id } = req.params;

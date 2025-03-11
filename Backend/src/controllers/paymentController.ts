@@ -1,15 +1,14 @@
 import { Request, Response } from "express";
 import { PaymentService } from "../services/paymentService";
 
-/**
- * Handles payment-related actions such as capturing and verifying payments.
- */
+// Handles payment-related actions such as capturing and verifying payments.
+ 
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
-  /**
-   * Captures a payment for an event.
-   */
+  
+    // Captures a payment for an event.
+   
   public async capturePayment(req: Request, res: Response): Promise<void> {
     try {
       const eventDetails = this.getEventDetails(req, res);
@@ -24,9 +23,9 @@ export class PaymentController {
     }
   }
 
-  /**
-   * Verifies payment details and confirms event registration.
-   */
+  
+    // Verifies payment details and confirms event registration.
+   
   public async verifyPayment(req: Request, res: Response): Promise<void> {
     try {
       const paymentDetails = this.getPaymentDetails(req, res);
@@ -34,7 +33,7 @@ export class PaymentController {
 
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature, eventId, userId } = paymentDetails;
       
-      // Call verifyPayment but don't check .success (because it returns void)
+    
       await this.paymentService.verifyPayment(
         razorpay_order_id,
         razorpay_payment_id,
@@ -50,10 +49,9 @@ export class PaymentController {
   }
 
 
-  /**
-   * Extracts event and user details from the request.
-   * Returns null if validation fails.
-   */
+  
+   // Extracts event and user details from the request.
+   
   private getEventDetails(req: Request, res: Response): { eventId: string; userId: string } | null {
     const { eventId, userId } = req.body;
 
@@ -65,10 +63,9 @@ export class PaymentController {
     return { eventId, userId };
   }
 
-  /**
-   * Extracts payment details from the request.
-   * Returns null if validation fails.
-   */
+  
+   // Extracts payment details from the request.
+   
   private getPaymentDetails(
     req: Request,
     res: Response
@@ -83,32 +80,24 @@ export class PaymentController {
     return { razorpay_order_id, razorpay_payment_id, razorpay_signature, eventId, userId };
   }
 
-  /**
-   * Formats the payment confirmation response.
-   */
+  
   private formatPaymentConfirmation(confirmation: string | { id: string; status: string }): string {
     return typeof confirmation === "string"
       ? confirmation
       : `Payment successful: ${confirmation.id}, Status: ${confirmation.status}`;
   }
 
-  /**
-   * Sends a success response.
-   */
+  
   private sendSuccessResponse(res: Response, message: string): void {
     res.status(200).json({ success: true, message });
   }
 
-  /**
-   * Sends an error response with a specific status code.
-   */
+ 
   private sendErrorResponse(res: Response, message: string, statusCode: number = 500): void {
     res.status(statusCode).json({ success: false, message });
   }
 
-  /**
-   * Logs errors and sends an appropriate error response.
-   */
+  
   private handleError(res: Response, logMessage: string, error: unknown): void {
     console.error(logMessage, error);
     const errorMessage = error instanceof Error ? error.message : "Unexpected error occurred";

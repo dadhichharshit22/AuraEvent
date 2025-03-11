@@ -1,5 +1,6 @@
 import OTP from "../models/otpModal";
 
+// Handle OTP interaction
 export class OTPRepository {
   public async saveOTP(email: string, otp: string): Promise<void> {
     await OTP.deleteMany({ email }); 

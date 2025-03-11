@@ -3,6 +3,7 @@ import PasswordService from "../utils/passwordHelper";
 import jwt from "jsonwebtoken";
 import { LoginCredentials, RegistrationData, PasswordChangeRequest } from "../types/authTypes";
 
+// Handles all the functioniality of Auth Controller
 export class AuthService {
   private readonly passwordService: PasswordService;
 
@@ -10,6 +11,7 @@ export class AuthService {
     this.passwordService = new PasswordService();
   }
 
+   // handle a register
   public async register(userData: RegistrationData): Promise<string> {
     this.validateRegistrationData(userData);
 
@@ -29,7 +31,7 @@ export class AuthService {
 
     return this.createAuthToken(newUser.id);
   }
-
+  // handle a login
   public async login(credentials: LoginCredentials): Promise<string> {
     this.validateLoginCredentials(credentials);
 
@@ -40,7 +42,8 @@ export class AuthService {
 
     return this.createAuthToken(user.id);
   }
-
+  
+  // handle a changePassword
   public async changePassword(request: PasswordChangeRequest): Promise<void> {
     this.validatePasswordChangeRequest(request);
 

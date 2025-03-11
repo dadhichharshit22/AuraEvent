@@ -5,7 +5,7 @@ import User, { IUser } from "../models/userModal";
 export interface AuthRequest extends Request {
   user?: IUser;
 }
-
+ // Handle AuthMiddleware
 export const authMiddleware = async (
   req: AuthRequest,
   res: Response,

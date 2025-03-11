@@ -3,29 +3,11 @@ import { EventAttendeeService, EventNotFoundError, UserAlreadyRegisteredError } 
 import { EmailService } from "../services/emailService";
 import { UserRepository } from "../repositories/userRepositories";
 
-/**
- * Custom error for payment verification failures.
- */
-class PaymentVerificationError extends Error {
-  constructor() {
-    super("Payment verification failed.");
-    this.name = "PaymentVerificationError";
-  }
-}
 
-/**
- * Custom error for payment processing failures.
- */
-class PaymentProcessingError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "PaymentProcessingError";
-  }
-}
 
-/**
- * Service responsible for handling payment operations.
- */
+
+ // Service responsible for handling payment operations.
+
 export class PaymentService {
   constructor(
     private paymentRepository: PaymentRepository,
@@ -34,9 +16,9 @@ export class PaymentService {
     private userRepository: UserRepository
   ) {}
 
-  /**
-   * Initiates payment capture for an event registration.
-   */
+  
+   // Initiates payment capture for an event registration.
+   
   public async capturePayment(eventId: string, userId: string): Promise<string> {
     if (!eventId || !userId) {
       throw new PaymentProcessingError("Event ID and User ID are required.");
@@ -61,9 +43,9 @@ export class PaymentService {
     return paymentOrder.id;  // Assuming `id` exists in the returned object
   }
 
-  /**
-   * Verifies payment and registers the user as an attendee.
-   */
+  
+   // Verifies payment and registers the user as an attendee.
+   
   public async verifyPayment(orderId: string, paymentId: string, signature: string, eventId: string, userId: string): Promise<void> {
     if (!orderId || !paymentId || !signature || !eventId || !userId) {
       throw new PaymentVerificationError();
@@ -88,5 +70,25 @@ export class PaymentService {
       paymentId,
       new Date().toISOString()
     );
+  }
+}
+
+
+ // Custom error for payment verification failures.
+ 
+class PaymentVerificationError extends Error {
+  constructor() {
+    super("Payment verification failed.");
+    this.name = "PaymentVerificationError";
+  }
+}
+
+
+ // Custom error for payment processing failures.
+ 
+class PaymentProcessingError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "PaymentProcessingError";
   }
 }

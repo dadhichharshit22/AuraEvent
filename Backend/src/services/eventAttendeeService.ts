@@ -1,29 +1,11 @@
 import mongoose from "mongoose";
 import { EventRepository } from "../repositories/eventAttendeeRepositories";
 
-/**
- * Custom error class for when an event is not found.
- */
-class EventNotFoundError extends Error {
-  constructor() {
-    super("Event not found");
-    this.name = "EventNotFoundError";
-  }
-}
 
-/**
- * Custom error class for when a user is already registered.
- */
-class UserAlreadyRegisteredError extends Error {
-  constructor() {
-    super("User is already registered");
-    this.name = "UserAlreadyRegisteredError";
-  }
-}
 
-/**
- * Service for managing event attendees.
- */
+
+ // Service for managing event attendees.
+ 
 class EventAttendeeService {
   private eventRepository: EventRepository;
 
@@ -31,10 +13,10 @@ class EventAttendeeService {
     this.eventRepository = eventRepository;
   }
 
-  /**
-   * Registers a user for an event if they are not already registered.
-   * Throws exceptions instead of returning error objects.
-   */
+  
+   // Registers a user for an event if they are not already registered.
+   
+  
   async registerAttendee(eventId: string, userId: string): Promise<void> {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new EventNotFoundError();
@@ -48,9 +30,9 @@ class EventAttendeeService {
   }
 }
 
-/**
- * Wrapper class for an Event document to encapsulate behavior.
- */
+
+ // encapsulate behavior of attendee.
+ 
 class EventWrapper {
   private event: any;
 
@@ -58,9 +40,9 @@ class EventWrapper {
     this.event = event;
   }
 
-  /**
-   * Checks if a user is already registered for the event.
-   */
+  
+   // Checks if a user is already registered for the event.
+   
   hasAttendee(userId: string): boolean {
     if (!this.event || !this.event.attendees) {
       return false; // Prevents reading 'some' on undefined
@@ -71,11 +53,30 @@ class EventWrapper {
     );
   }
 
-  /**
-   * Adds an attendee to the event.
-   */
+  
+   // Adds an attendee to the event.
+   
   addAttendee(userId: string) {
     this.event.attendees.push(new mongoose.Types.ObjectId(userId));
+  }
+}
+
+
+ 
+ 
+class EventNotFoundError extends Error {
+  constructor() {
+    super("Event not found");
+    this.name = "EventNotFoundError";
+  }
+}
+
+
+ 
+class UserAlreadyRegisteredError extends Error {
+  constructor() {
+    super("User is already registered");
+    this.name = "UserAlreadyRegisteredError";
   }
 }
 

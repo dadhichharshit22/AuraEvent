@@ -3,7 +3,7 @@ import { createRazorpayInstance } from "../config/razorpayConnection";
 class PaymentGateway {
   private static readonly CURRENCY = "INR";
   private static readonly CONVERSION_RATE = 100; 
-
+    // Handle Create Order on Razorpay
   static async createOrder(amount: number): Promise<{ id: string; status: string }> {
     try {
       const razorpay = createRazorpayInstance(); 
