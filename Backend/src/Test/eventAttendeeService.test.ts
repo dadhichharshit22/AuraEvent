@@ -1,47 +1,61 @@
-import { EventAttendeeService, EventNotFoundError, UserAlreadyRegisteredError } from "../services/eventAttendeeService";
+import mongoose from "mongoose";
+import { EventAttendeeService, EventNotFoundError, UserAlreadyRegisteredError, EventWrapper } from "../services/eventAttendeeService";
 import { EventRepository } from "../repositories/eventAttendeeRepositories";
 
-jest.mock("../repositories/EventRepository");
+jest.mock("../repositories/eventAttendeeRepositories");
 
 describe("EventAttendeeService", () => {
-  let eventRepository: jest.Mocked<EventRepository>;
+  let eventRepositoryMock: jest.Mocked<EventRepository>;
   let eventAttendeeService: EventAttendeeService;
 
   beforeEach(() => {
-    eventRepository = new EventRepository() as jest.Mocked<EventRepository>;
-    eventAttendeeService = new EventAttendeeService(eventRepository);
+    eventRepositoryMock = {
+      findById: jest.fn(),
+      save: jest.fn(),
+    } as unknown as jest.Mocked<EventRepository>;
+
+    eventAttendeeService = new EventAttendeeService(eventRepositoryMock);
   });
 
-  test("throws EventNotFoundError if event does not exist", async () => {
-    eventRepository.findById.mockResolvedValue(null);
+  describe("registerAttendee", () => {
+    const mockEventId = new mongoose.Types.ObjectId().toString();
+    const mockUserId = new mongoose.Types.ObjectId().toString();
 
-    await expect(eventAttendeeService.registerAttendee("invalid_event_id", "user_id"))
-      .rejects.toThrow(EventNotFoundError);
-  });
+    it("should register a new attendee if not already registered", async () => {
+      const mockEvent = { attendees: [], save: jest.fn() };
+      const wrappedEvent = new EventWrapper(mockEvent); // Wrap the event
+      eventRepositoryMock.findById.mockResolvedValueOnce(wrappedEvent);
+      eventRepositoryMock.save.mockResolvedValueOnce(undefined);
 
-  test("throws UserAlreadyRegisteredError if user is already registered", async () => {
-    const mockEvent = {
-      hasAttendee: jest.fn().mockReturnValue(true),
-      addAttendee: jest.fn(),
-    };
-    eventRepository.findById.mockResolvedValue(mockEvent as any);
+      await eventAttendeeService.registerAttendee(mockEventId, mockUserId);
 
-    await expect(eventAttendeeService.registerAttendee("event_id", "user_id"))
-      .rejects.toThrow(UserAlreadyRegisteredError);
-  });
+      expect(eventRepositoryMock.findById).toHaveBeenCalledWith(mockEventId);
+      expect(eventRepositoryMock.save).toHaveBeenCalledWith(expect.any(Object));
+    });
 
-  test("registers an attendee successfully", async () => {
-    const mockEvent = {
-      hasAttendee: jest.fn().mockReturnValue(false),
-      addAttendee: jest.fn(),
-    };
-    eventRepository.findById.mockResolvedValue(mockEvent as any);
-    eventRepository.save.mockResolvedValue();
+    it("should throw EventNotFoundError if event does not exist", async () => {
+      eventRepositoryMock.findById.mockResolvedValueOnce(null);
 
-    await expect(eventAttendeeService.registerAttendee("event_id", "new_user_id"))
-      .resolves.toBeUndefined();
+      await expect(eventAttendeeService.registerAttendee(mockEventId, mockUserId))
+        .rejects.toThrow(EventNotFoundError);
 
-    expect(mockEvent.addAttendee).toHaveBeenCalledWith("new_user_id");
-    expect(eventRepository.save).toHaveBeenCalledWith(mockEvent);
+      expect(eventRepositoryMock.findById).toHaveBeenCalledWith(mockEventId);
+      expect(eventRepositoryMock.save).not.toHaveBeenCalled();
+    });
+
+    it("should throw UserAlreadyRegisteredError if user is already registered", async () => {
+      const mockEvent = { 
+        attendees: [new mongoose.Types.ObjectId(mockUserId)], 
+        save: jest.fn() 
+      };
+      const wrappedEvent = new EventWrapper(mockEvent);
+      eventRepositoryMock.findById.mockResolvedValueOnce(wrappedEvent);
+
+      await expect(eventAttendeeService.registerAttendee(mockEventId, mockUserId))
+        .rejects.toThrow(UserAlreadyRegisteredError);
+
+      expect(eventRepositoryMock.findById).toHaveBeenCalledWith(mockEventId);
+      expect(eventRepositoryMock.save).not.toHaveBeenCalled();
+    });
   });
 });

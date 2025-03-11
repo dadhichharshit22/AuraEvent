@@ -1,79 +1,100 @@
-import request from "supertest";
-import express from "express";
-import { OTPController } from "../controllers/otpcontroller";
+import { Request, Response } from "express";
+import { OneTimePasswordController } from "../controllers/otpcontroller";
 import { OTPService } from "../services/otpService";
-import { EmailService } from "../services/emailService";
 
-const app = express();
-app.use(express.json());
+describe("OneTimePasswordController", () => {
+  let otpServiceMock: Partial<OTPService>;
+  let otpController: OneTimePasswordController;
+  let mockRequest: Partial<Request>;
+  let mockResponse: Partial<Response>;
+  let jsonMock: jest.Mock;
 
-const mockOTPService = {
-  generateOTP: jest.fn().mockReturnValue("123456"),
-  saveOTP: jest.fn().mockResolvedValue(undefined),
-  verifyOTP: jest.fn().mockResolvedValue(true),
-};
+  beforeEach(() => {
+    otpServiceMock = {
+      generateAndSendOTP: jest.fn(),
+      verifyOTP: jest.fn(),
+    };
 
-const mockEmailService = {
-  sendOTPEmail: jest.fn().mockResolvedValue(undefined),
-};
+    otpController = new OneTimePasswordController(otpServiceMock as OTPService);
 
-const otpController = new OTPController(
-  mockOTPService as unknown as OTPService,
-  mockEmailService as unknown as EmailService
-);
+    jsonMock = jest.fn();
+    mockResponse = {
+      status: jest.fn().mockReturnThis(),
+      json: jsonMock,
+    };
+  });
 
-app.post("/api/otp/send", otpController.sendOTP);
-app.post("/api/otp/verify", otpController.verifyOTP);
+  describe("sendOneTimePassword", () => {
+    it("should return 200 status and success message when OTP is sent", async () => {
+      mockRequest = { body: { email: "test@example.com" } };
+      (otpServiceMock.generateAndSendOTP as jest.Mock).mockResolvedValueOnce(undefined);
 
-describe("OTPController", () => {
-  describe("sendOTP", () => {
-    it("should send OTP successfully", async () => {
-      const res = await request(app)
-        .post("/api/otp/send")
-        .send({ email: "test@example.com" });
+      await otpController.sendOneTimePassword(mockRequest as Request, mockResponse as Response);
 
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("message", "OTP sent successfully");
-      expect(mockOTPService.generateOTP).toHaveBeenCalled();
-      expect(mockOTPService.saveOTP).toHaveBeenCalledWith(
-        "test@example.com",
-        "123456"
-      );
-      expect(mockEmailService.sendOTPEmail).toHaveBeenCalledWith(
-        "test@example.com",
-        "123456"
-      );
+      expect(otpServiceMock.generateAndSendOTP).toHaveBeenCalledWith("test@example.com");
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(jsonMock).toHaveBeenCalledWith({ success: true, message: "One-Time Password sent successfully." });
     });
 
-    it("should return 400 if email is missing", async () => {
-      const res = await request(app).post("/api/otp/send").send({});
-      expect(res.status).toBe(400);
-      expect(res.body).toHaveProperty("message", "Email is required");
+    it("should return 400 status when email is missing", async () => {
+      mockRequest = { body: {} };
+
+      await otpController.sendOneTimePassword(mockRequest as Request, mockResponse as Response);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(jsonMock).toHaveBeenCalledWith({ success: false, message: "Email is required." });
+    });
+
+    it("should return 500 status when OTP sending fails", async () => {
+      mockRequest = { body: { email: "test@example.com" } };
+      (otpServiceMock.generateAndSendOTP as jest.Mock).mockRejectedValueOnce(new Error("Service failure"));
+
+      await otpController.sendOneTimePassword(mockRequest as Request, mockResponse as Response);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(jsonMock).toHaveBeenCalledWith({ success: false, message: "Failed to generate or send OTP." });
     });
   });
 
-  describe("verifyOTP", () => {
-    it("should verify OTP successfully", async () => {
-      const res = await request(app)
-        .post("/api/otp/verify")
-        .send({ email: "test@example.com", otp: "123456" });
+  describe("validateOneTimePassword", () => {
+    it("should return 200 status and success message when OTP is valid", async () => {
+      mockRequest = { body: { email: "test@example.com", otp: "123456" } };
+      (otpServiceMock.verifyOTP as jest.Mock).mockResolvedValueOnce(true);
 
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("message", "OTP verified successfully");
-      expect(mockOTPService.verifyOTP).toHaveBeenCalledWith(
-        "test@example.com",
-        "123456"
-      );
+      await otpController.validateOneTimePassword(mockRequest as Request, mockResponse as Response);
+
+      expect(otpServiceMock.verifyOTP).toHaveBeenCalledWith("test@example.com", "123456");
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(jsonMock).toHaveBeenCalledWith({ success: true, message: "One-Time Password verified successfully." });
     });
 
-    it("should return 400 if OTP is invalid", async () => {
-      mockOTPService.verifyOTP.mockResolvedValueOnce(false);
-      const res = await request(app)
-        .post("/api/otp/verify")
-        .send({ email: "test@example.com", otp: "000000" });
+    it("should return 400 status when email or OTP is missing", async () => {
+      mockRequest = { body: { email: "test@example.com" } };
 
-      expect(res.status).toBe(400);
-      expect(res.body).toHaveProperty("message", "Invalid OTP");
+      await otpController.validateOneTimePassword(mockRequest as Request, mockResponse as Response);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(jsonMock).toHaveBeenCalledWith({ success: false, message: "Email and One-Time Password are required." });
+    });
+
+    it("should return 400 status when OTP is invalid", async () => {
+      mockRequest = { body: { email: "test@example.com", otp: "wrongOTP" } };
+      (otpServiceMock.verifyOTP as jest.Mock).mockResolvedValueOnce(false);
+
+      await otpController.validateOneTimePassword(mockRequest as Request, mockResponse as Response);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(jsonMock).toHaveBeenCalledWith({ success: false, message: "Invalid or expired One-Time Password." });
+    });
+
+    it("should return 500 status when OTP verification fails", async () => {
+      mockRequest = { body: { email: "test@example.com", otp: "123456" } };
+      (otpServiceMock.verifyOTP as jest.Mock).mockRejectedValueOnce(new Error("Service failure"));
+
+      await otpController.validateOneTimePassword(mockRequest as Request, mockResponse as Response);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(jsonMock).toHaveBeenCalledWith({ success: false, message: "Failed to validate OTP." });
     });
   });
 });

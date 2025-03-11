@@ -62,6 +62,9 @@ class EventWrapper {
    * Checks if a user is already registered for the event.
    */
   hasAttendee(userId: string): boolean {
+    if (!this.event || !this.event.attendees) {
+      return false; // Prevents reading 'some' on undefined
+    }
     const userObjectId = new mongoose.Types.ObjectId(userId);
     return this.event.attendees.some((attendeeId: mongoose.Types.ObjectId) =>
       attendeeId.equals(userObjectId)

@@ -1,56 +1,89 @@
-import request from "supertest";
-import express from "express";
-import { getUserProfile } from "../controllers/userController";
+import { Request, Response } from "express";
+import { UserController } from "../controllers/userController";
 import { UserService } from "../services/userService";
 
-jest.mock("../services/UserService");
+/**
+ * Mocks for dependencies
+ */
+const mockUserService = {
+  getUserById: jest.fn(),
+} as unknown as UserService;
 
-const app = express();
-app.use(express.json());
-app.get("/userProfile", getUserProfile);
+const userController = new UserController(mockUserService);
 
-describe("UserController - getUserProfile", () => {
-  afterEach(() => {
+/**
+ * Helper function to create a mock response object.
+ */
+const mockResponse = (): Partial<Response> => {
+  const res: Partial<Response> = {};
+  res.status = jest.fn().mockReturnThis();
+  res.json = jest.fn();
+  return res;
+};
+
+/**
+ * Test cases for UserController
+ */
+describe("UserController", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+
+  beforeEach(() => {
+    req = {};
+    res = mockResponse();
     jest.clearAllMocks();
   });
 
-  it("should return 200 with user data when user is found", async () => {
-    const mockUser = { id: "123", name: "John Doe", email: "john@example.com" };
+  test("should return 400 if user ID is missing", async () => {
+    await userController.getUserProfile(req as Request, res as Response);
 
-    (UserService.getUserById as jest.Mock).mockResolvedValue(mockUser);
-
-    const response = await request(app)
-      .get("/userProfile")
-      .set("Authorization", "Bearer some-token")
-      .send({ user: { id: "123" } });
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(mockUser);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ message: "User ID is required" });
   });
 
-  it("should return 404 if user is not found", async () => {
-    (UserService.getUserById as jest.Mock).mockResolvedValue(null);
+  test("should return user details if user exists", async () => {
+    const mockUser = {
+      id: "123",
+      name: "John Doe",
+      email: "john@example.com",
+      password: "hashedPassword",
+      username: "johndoe",
+      role: "user",
+      phoneNumber: 1234567890, // Ensure correct phoneNumber type
+    };
 
-    const response = await request(app)
-      .get("/userProfile")
-      .set("Authorization", "Bearer some-token")
-      .send({ user: { id: "123" } });
+    req = { user: { id: "123" } };
+    mockUserService.getUserById = jest.fn().mockResolvedValue(mockUser);
 
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({ message: "User not found" });
+    await userController.getUserProfile(req as Request, res as Response);
+
+    expect(mockUserService.getUserById).toHaveBeenCalledWith("123");
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(mockUser);
   });
 
-  it("should return 500 if an error occurs in the service layer", async () => {
-    (UserService.getUserById as jest.Mock).mockRejectedValue(
-      new Error("Database error")
-    );
+  test("should return 404 if user is not found", async () => {
+    req = { user: { id: "999" } };
+    mockUserService.getUserById = jest.fn().mockResolvedValue(null);
 
-    const response = await request(app)
-      .get("/userProfile")
-      .set("Authorization", "Bearer some-token")
-      .send({ user: { id: "123" } });
+    await userController.getUserProfile(req as Request, res as Response);
 
-    expect(response.status).toBe(500);
-    expect(response.body).toEqual({ message: "Server error" });
+    expect(mockUserService.getUserById).toHaveBeenCalledWith("999");
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ message: "User not found" });
+  });
+
+  test("should return 500 if an unexpected error occurs", async () => {
+    req = { user: { id: "123" } };
+    mockUserService.getUserById = jest.fn().mockRejectedValue(new Error("Database connection failed"));
+
+    await userController.getUserProfile(req as Request, res as Response);
+
+    expect(mockUserService.getUserById).toHaveBeenCalledWith("123");
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Internal Server Error",
+      error: "Database connection failed",
+    });
   });
 });

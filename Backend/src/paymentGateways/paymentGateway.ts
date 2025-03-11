@@ -6,7 +6,7 @@ class PaymentGateway {
 
   static async createOrder(amount: number): Promise<{ id: string; status: string }> {
     try {
-      const razorpay = createRazorpayInstance(); // Initialize Razorpay instance
+      const razorpay = createRazorpayInstance(); 
       const options = this.getOrderOptions(amount);
       const order = await razorpay.orders.create(options);
       return order;

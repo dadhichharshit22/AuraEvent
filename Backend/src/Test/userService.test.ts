@@ -1,54 +1,40 @@
 import { UserService } from "../services/userService";
-import User from "../models/userModal";
+import { UserRepository } from "../repositories/userRepositories";
 
-jest.mock("../models/userModal", () => ({
-  findById: jest.fn(),
-}));
+jest.mock("../repositories/userRepositories"); // Mock the entire repository module
 
 describe("UserService", () => {
-  it("should return a user when the user exists", async () => {
-    const mockUser = {
-      id: "1234",
-      name: "Test User",
-      email: "test@example.com",
-      password: "hashedPassword",
-    };
+  let userService: UserService;
+  let mockUserRepository: jest.Mocked<UserRepository>;
 
-    (User.findById as jest.Mock).mockResolvedValueOnce(mockUser);
-
-    const user = await UserService.getUserById("1234");
-
-    expect(user).toEqual({
-      id: "1234",
-      name: "Test User",
-      email: "test@example.com",
-      password: "hashedPassword",
-    });
-    expect(User.findById).toHaveBeenCalledWith("1234");
+  beforeEach(() => {
+    mockUserRepository = new UserRepository() as jest.Mocked<UserRepository>;
+    userService = new UserService(mockUserRepository);
   });
 
-  it("should return null when the user does not exist", async () => {
-    (User.findById as jest.Mock).mockResolvedValueOnce(null);
+  it("should return a user when found", async () => {
+    const mockUser = { id: "123", name: "John Doe", email: "john@example.com" };
+    mockUserRepository.findById = jest.fn().mockResolvedValue(mockUser);
 
-    const user = await UserService.getUserById("nonExistingId");
+    const result = await userService.getUserById("123");
 
-    expect(user).toBeNull();
-    expect(User.findById).toHaveBeenCalledWith("nonExistingId");
+    expect(result).toEqual(mockUser);
+    expect(mockUserRepository.findById).toHaveBeenCalledWith("123");
   });
 
-  it("should throw an error if there is an issue fetching the user", async () => {
-    (User.findById as jest.Mock).mockRejectedValueOnce(
-      new Error("Database error")
-    );
+  it("should return null when user is not found", async () => {
+    mockUserRepository.findById = jest.fn().mockResolvedValue(null);
 
-    try {
-      await UserService.getUserById("1234");
-    } catch (error) {
-      expect((error as Error).message).toBe(
-        "Error fetching user from database"
-      );
-    }
+    const result = await userService.getUserById("456");
 
-    expect(User.findById).toHaveBeenCalledWith("1234");
+    expect(result).toBeNull();
+    expect(mockUserRepository.findById).toHaveBeenCalledWith("456");
+  });
+
+  it("should throw an error if repository fails", async () => {
+    mockUserRepository.findById = jest.fn().mockRejectedValue(new Error("Database error"));
+
+    await expect(userService.getUserById("789")).rejects.toThrow("Database error");
+    expect(mockUserRepository.findById).toHaveBeenCalledWith("789");
   });
 });

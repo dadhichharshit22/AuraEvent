@@ -134,7 +134,7 @@ class EventController {
     }
   };
 
-  public registerEvent = async (req: Request, res: Response): Promise<void> => {
+  public registerForEvent = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.body;
     const { id } = req.params;
 
@@ -168,7 +168,7 @@ class EventController {
     }
   };
 
-  public unregisterEvent = async (req: Request, res: Response): Promise<void> => {
+  public unregisterFromEvent = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.body;
     const { id } = req.params;
 
@@ -242,7 +242,7 @@ class EventController {
     }
   };
 
-  public getCreatedEvents = async (req: AuthRequest, res: Response): Promise<void> => {
+  public getUserCreatedEvents = async (req: AuthRequest, res: Response): Promise<void> => {
     if (!req.user?._id) {
       res.status(401).json({ message: "User not authenticated" });
       return;
@@ -257,7 +257,7 @@ class EventController {
     }
   };
 
-  public getRegisteredEvents = async (req: AuthRequest, res: Response): Promise<void> => {
+  public getUserRegisteredEvents = async (req: AuthRequest, res: Response): Promise<void> => {
     if (!req.user?._id) {
       res.status(401).json({ message: "User not authenticated" });
       return;

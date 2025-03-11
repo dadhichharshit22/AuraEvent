@@ -28,18 +28,14 @@ export class UserController {
     }
   }
 
-  // ───────────────────────────────────────────────────────────────────────────────
-  //  Validation Methods
-  // ───────────────────────────────────────────────────────────────────────────────
+
 
   /** Checks if the request contains a valid user ID. */
   private hasValidUser(req: AuthRequest): boolean {
     return !!req.user?.id;
   }
 
-  // ───────────────────────────────────────────────────────────────────────────────
-  //  Business Logic Methods
-  // ───────────────────────────────────────────────────────────────────────────────
+ 
 
   /** Retrieves a user by ID from the service layer. Throws an error if the user is not found. */
   private async fetchUserById(userId: string) {
@@ -48,10 +44,7 @@ export class UserController {
     return user;
   }
 
-  // ───────────────────────────────────────────────────────────────────────────────
-  //  Error Handling Methods
-  // ───────────────────────────────────────────────────────────────────────────────
-
+  
   /** Handles errors gracefully and sends appropriate responses. */
   private handleError(res: Response, error: unknown): void {
     if (error instanceof UserNotFoundError) {
@@ -62,9 +55,6 @@ export class UserController {
     this.respondWithError(res, 500, "Internal Server Error", error);
   }
 
-  // ───────────────────────────────────────────────────────────────────────────────
-  //  Response Handling Methods
-  // ───────────────────────────────────────────────────────────────────────────────
 
   /** Sends a 200 OK response with the user data. */
   private respondWithSuccess(res: Response, user: unknown): void {

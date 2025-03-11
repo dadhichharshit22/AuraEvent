@@ -1,87 +1,70 @@
 import { OTPService } from "../services/otpService";
-import OTP from "../models/otpModal";
+import { OTPRepository } from "../repositories/otpRepositories";
+import { EmailService } from "../services/emailService";
 
-jest.mock("../models/otpModal");
+jest.mock("../repositories/otpRepositories");
+jest.mock("../services/emailService");
 
 describe("OTPService", () => {
   let otpService: OTPService;
+  let otpRepositoryMock: jest.Mocked<OTPRepository>;
+  let emailServiceMock: jest.Mocked<EmailService>;
 
   beforeEach(() => {
-    otpService = new OTPService();
+    otpRepositoryMock = new OTPRepository() as jest.Mocked<OTPRepository>;
+    emailServiceMock = new EmailService() as jest.Mocked<EmailService>;
+    otpService = new OTPService(otpRepositoryMock, emailServiceMock);
   });
 
-  it("should generate a 6-digit OTP", () => {
-    const otp = otpService.generateOTP();
-    expect(otp).toMatch(/^\d{6}$/);
+  describe("generateAndSendOTP", () => {
+    it("should generate an OTP, save it, and send an email", async () => {
+      // Arrange
+      const mockEmail = "test@example.com";
+      otpRepositoryMock.saveOTP = jest.fn().mockResolvedValue(undefined);
+      emailServiceMock.sendOtpEmail = jest.fn().mockResolvedValue(undefined);
+
+      // Act
+      await otpService.generateAndSendOTP(mockEmail);
+
+      // Assert
+      expect(otpRepositoryMock.saveOTP).toHaveBeenCalledWith(
+        mockEmail,
+        expect.any(String) // Ensure OTP is a string
+      );
+      expect(emailServiceMock.sendOtpEmail).toHaveBeenCalledWith(
+        mockEmail,
+        expect.any(String)
+      );
+    });
   });
 
-  it("should save OTP to the database", async () => {
-    const email = "test@example.com";
-    const otp = "123456";
+  describe("verifyOTP", () => {
+    it("should return true if the OTP is correct", async () => {
+      // Arrange
+      const mockEmail = "test@example.com";
+      const mockOTP = "123456";
+      otpRepositoryMock.verifyOTP = jest.fn().mockResolvedValue(true);
 
-    (OTP.deleteMany as jest.Mock).mockResolvedValueOnce({ deletedCount: 1 });
-    (OTP.create as jest.Mock).mockResolvedValueOnce({ email, otp });
+      // Act
+      const result = await otpService.verifyOTP(mockEmail, mockOTP);
 
-    await otpService.saveOTP(email, otp);
+      // Assert
+      expect(result).toBe(true);
+      expect(otpRepositoryMock.verifyOTP).toHaveBeenCalledWith(mockEmail, mockOTP);
+    });
 
-    expect(OTP.deleteMany).toHaveBeenCalledWith({ email });
-    expect(OTP.create).toHaveBeenCalledWith({ email, otp });
-  });
+    it("should return false if the OTP is incorrect", async () => {
+      // Arrange
+      const mockEmail = "test@example.com";
+      const mockOTP = "654321";
+      otpRepositoryMock.verifyOTP = jest.fn().mockResolvedValue(false);
 
-  it("should handle errors while saving OTP", async () => {
-    const email = "test@example.com";
-    const otp = "123456";
+      // Act
+      const result = await otpService.verifyOTP(mockEmail, mockOTP);
 
-    (OTP.deleteMany as jest.Mock).mockRejectedValueOnce(
-      new Error("Database error")
-    );
-
-    try {
-      await otpService.saveOTP(email, otp);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        expect(error.message).toBe("Database error");
-      }
-    }
-  });
-
-  it("should verify OTP successfully", async () => {
-    const email = "test@example.com";
-    const otp = "123456";
-
-    (OTP.findOne as jest.Mock).mockResolvedValueOnce({ email, otp });
-
-    const result = await otpService.verifyOTP(email, otp);
-
-    expect(result).toBe(true);
-    expect(OTP.deleteMany).toHaveBeenCalledWith({ email });
-  });
-
-  it("should return false if OTP verification fails", async () => {
-    const email = "test@example.com";
-    const otp = "123456";
-
-    (OTP.findOne as jest.Mock).mockResolvedValueOnce(null);
-
-    const result = await otpService.verifyOTP(email, otp);
-
-    expect(result).toBe(false);
-  });
-
-  it("should handle errors while verifying OTP", async () => {
-    const email = "test@example.com";
-    const otp = "123456";
-
-    (OTP.findOne as jest.Mock).mockRejectedValueOnce(
-      new Error("Database error")
-    );
-
-    try {
-      await otpService.verifyOTP(email, otp);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        expect(error.message).toBe("Database error");
-      }
-    }
+      // Assert
+      expect(result).toBe(false);
+      expect(otpRepositoryMock.verifyOTP).toHaveBeenCalledWith(mockEmail, mockOTP);
+    });
   });
 });

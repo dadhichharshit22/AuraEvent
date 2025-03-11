@@ -7,3 +7,8 @@ export default {
     "^.+\\.ts$": "ts-jest"
   }
 };
+require("dotenv").config();
+
+module.exports = {
+  setupFiles: ["dotenv/config"], // Ensures environment variables are available
+};

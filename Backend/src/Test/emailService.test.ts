@@ -3,15 +3,9 @@ import { EmailService } from "../services/emailService";
 import { userRegistrationTemplate } from "../emailTemplate/userRegistration";
 import { otpTemplate } from "../emailTemplate/otpTemplates";
 import { eventNotificationTemplate } from "../emailTemplate/eventNotification";
-import {
-  registrationEmailTemplate,
-  unregistrationEmailTemplate,
-} from "../emailTemplate/eventRegistration";
+import { registrationEmailTemplate, unregistrationEmailTemplate } from "../emailTemplate/eventRegistration";
 import { newEventNotification } from "../emailTemplate/newEventNotification";
-import {
-  paymentSuccessTemplate,
-  paymentFailureTemplate,
-} from "../emailTemplate/paymentTemplates";
+import { paymentSuccessTemplate, paymentFailureTemplate } from "../emailTemplate/paymentTemplates";
 
 jest.mock("nodemailer");
 
@@ -19,8 +13,8 @@ describe("EmailService", () => {
   let emailService: EmailService;
   let sendMailMock: jest.Mock;
 
-  beforeAll(() => {
-    sendMailMock = jest.fn().mockResolvedValue(true);
+  beforeEach(() => {
+    sendMailMock = jest.fn();
     (nodemailer.createTransport as jest.Mock).mockReturnValue({
       sendMail: sendMailMock,
     });
@@ -28,159 +22,123 @@ describe("EmailService", () => {
     emailService = new EmailService();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  describe("sendEmail", () => {
+    it("should send an email successfully", async () => {
+      sendMailMock.mockResolvedValueOnce({});
+
+      await emailService["sendEmail"]("test@example.com", "Test Subject", "<p>Test Content</p>");
+
+      expect(sendMailMock).toHaveBeenCalledWith({
+        from: process.env.EMAIL_USER || "default@gmail.com",
+        to: "test@example.com",
+        subject: "Test Subject",
+        html: "<p>Test Content</p>",
+      });
+    });
+
+    it("should throw an error if email sending fails", async () => {
+      sendMailMock.mockRejectedValueOnce(new Error("SMTP Error"));
+
+      await expect(emailService["sendEmail"]("test@example.com", "Test Subject", "<p>Test Content</p>"))
+        .rejects.toThrow("Email delivery failed.");
+    });
   });
 
-  it("should send a welcome email", async () => {
-    const name = "John Doe";
-    const email = "johndoe@example.com";
+  describe("sendWelcomeEmail", () => {
+    it("should send a welcome email", async () => {
+      sendMailMock.mockResolvedValueOnce({});
+      await emailService.sendWelcomeEmail("John Doe", "john@example.com");
 
-    await emailService.sendWelcomeEmail(name, email);
-
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: email,
+      expect(sendMailMock).toHaveBeenCalledWith({
+        from: process.env.EMAIL_USER || "default@gmail.com",
+        to: "john@example.com",
         subject: "Welcome to Event Management",
-        html: userRegistrationTemplate(name),
-      })
-    );
+        html: userRegistrationTemplate("John Doe"),
+      });
+    });
   });
 
-  it("should send an OTP email", async () => {
-    const email = "johndoe@example.com";
-    const otp = "123456";
+  describe("sendOtpEmail", () => {
+    it("should send an OTP email", async () => {
+      sendMailMock.mockResolvedValueOnce({});
+      await emailService.sendOtpEmail("user@example.com", "123456");
 
-    await emailService.sendOTPEmail(email, otp);
-
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: email,
+      expect(sendMailMock).toHaveBeenCalledWith({
+        from: process.env.EMAIL_USER || "default@gmail.com",
+        to: "user@example.com",
         subject: "Your OTP Code",
-        html: otpTemplate(otp),
-      })
-    );
+        html: otpTemplate("123456"),
+      });
+    });
   });
 
-  it("should send an event creation email", async () => {
-    const email = "johndoe@example.com";
-    const title = "New Event";
-    const date = "2025-02-20";
-    const description = "This is a description of the new event.";
+  describe("notifyEventCreation", () => {
+    it("should send an event creation notification", async () => {
+      sendMailMock.mockResolvedValueOnce({});
+      await emailService.notifyEventCreation("user@example.com", "Event Title", "2025-05-10", "Event Description");
 
-    await emailService.sendEventCreationEmail(email, title, date, description);
-
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: email,
+      expect(sendMailMock).toHaveBeenCalledWith({
+        from: process.env.EMAIL_USER || "default@gmail.com",
+        to: "user@example.com",
         subject: "Event Created",
-        html: eventNotificationTemplate(title, date, description),
-      })
-    );
+        html: eventNotificationTemplate("Event Title", "2025-05-10", "Event Description"),
+      });
+    });
   });
 
-  it("should send a new event notification email", async () => {
-    const email = "johndoe@example.com";
-    const title = "Exciting New Event";
-    const date = "2025-03-15";
-    const description = "Don't miss out on this exciting event!";
+  describe("confirmRegistration", () => {
+    it("should send an event registration confirmation", async () => {
+      sendMailMock.mockResolvedValueOnce({});
+      await emailService.confirmRegistration("user@example.com", "Event Title", "2025-05-10");
 
-    await emailService.sendNewEventNotification(
-      email,
-      title,
-      date,
-      description
-    );
-
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: email,
-        subject: "New Event Added to EventManage!",
-        html: newEventNotification(title, date, description),
-      })
-    );
-  });
-
-  it("should send an event registration email", async () => {
-    const email = "johndoe@example.com";
-    const title = "Awesome Event";
-    const date = "2025-04-10";
-
-    await emailService.sendEventRegistrationEmail(email, title, date);
-
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: email,
+      expect(sendMailMock).toHaveBeenCalledWith({
+        from: process.env.EMAIL_USER || "default@gmail.com",
+        to: "user@example.com",
         subject: "Event Registration Confirmation",
-        html: registrationEmailTemplate(title, date),
-      })
-    );
+        html: registrationEmailTemplate("Event Title", "2025-05-10"),
+      });
+    });
   });
 
-  it("should send an event unregistration email", async () => {
-    const email = "johndoe@example.com";
-    const title = "Awesome Event";
-    const date = "2025-04-10";
+  describe("confirmUnregistration", () => {
+    it("should send an event unregistration confirmation", async () => {
+      sendMailMock.mockResolvedValueOnce({});
+      await emailService.confirmUnregistration("user@example.com", "Event Title", "2025-05-10");
 
-    await emailService.sendEventUnregistrationEmail(email, title, date);
-
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: email,
+      expect(sendMailMock).toHaveBeenCalledWith({
+        from: process.env.EMAIL_USER || "default@gmail.com",
+        to: "user@example.com",
         subject: "Event Unregistration Confirmation",
-        html: unregistrationEmailTemplate(title, date),
-      })
-    );
+        html: unregistrationEmailTemplate("Event Title", "2025-05-10"),
+      });
+    });
   });
 
-  it("should send a payment success email", async () => {
-    const email = "johndoe@example.com";
-    const eventTitle = "Concert";
-    const amount = 100;
-    const transactionId = "txn123";
-    const paymentDate = "2025-02-18";
+  describe("sendPaymentSuccessEmail", () => {
+    it("should send a payment success email", async () => {
+      sendMailMock.mockResolvedValueOnce({});
+      await emailService.sendPaymentSuccessEmail("user@example.com", "Event Title", 50, "TXN12345", "2025-03-11");
 
-    await emailService.sendPaymentSuccessEmail(
-      email,
-      eventTitle,
-      amount,
-      transactionId,
-      paymentDate
-    );
-
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: email,
+      expect(sendMailMock).toHaveBeenCalledWith({
+        from: process.env.EMAIL_USER || "default@gmail.com",
+        to: "user@example.com",
         subject: "Payment Successful",
-        html: paymentSuccessTemplate(
-          eventTitle,
-          amount,
-          transactionId,
-          paymentDate
-        ),
-      })
-    );
+        html: paymentSuccessTemplate("Event Title", 50, "TXN12345", "2025-03-11"),
+      });
+    });
   });
 
-  it("should send a payment failure email", async () => {
-    const email = "johndoe@example.com";
-    const eventTitle = "Concert";
-    const amount = 100;
-    const errorMessage = "Payment declined";
+  describe("sendPaymentFailureEmail", () => {
+    it("should send a payment failure email", async () => {
+      sendMailMock.mockResolvedValueOnce({});
+      await emailService.sendPaymentFailureEmail("user@example.com", "Event Title", 50, "Payment failed due to insufficient funds.");
 
-    await emailService.sendPaymentFailureEmail(
-      email,
-      eventTitle,
-      amount,
-      errorMessage
-    );
-
-    expect(sendMailMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: email,
+      expect(sendMailMock).toHaveBeenCalledWith({
+        from: process.env.EMAIL_USER || "default@gmail.com",
+        to: "user@example.com",
         subject: "Payment Failed",
-        html: paymentFailureTemplate(eventTitle, amount, errorMessage),
-      })
-    );
+        html: paymentFailureTemplate("Event Title", 50, "Payment failed due to insufficient funds."),
+      });
+    });
   });
 });
