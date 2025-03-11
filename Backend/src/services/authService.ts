@@ -1,4 +1,4 @@
-import { UserRepository } from "../repositories/authRepositories";
+import { AuthRepository } from "../repositories/authRepositories";
 import PasswordService from "../utils/passwordHelper";
 import jwt from "jsonwebtoken";
 import { LoginCredentials, RegistrationData, PasswordChangeRequest } from "../types/authTypes";
@@ -7,7 +7,7 @@ import { LoginCredentials, RegistrationData, PasswordChangeRequest } from "../ty
 export class AuthService {
   private readonly passwordService: PasswordService;
 
-  constructor(private readonly userRepository: UserRepository) {
+  constructor(private readonly authRepository: AuthRepository) {
     this.passwordService = new PasswordService();
   }
 
@@ -21,7 +21,7 @@ export class AuthService {
 
     const hashedPassword = await this.passwordService.hashPassword(password);
 
-    const newUser = await this.userRepository.createUser({
+    const newUser = await this.authRepository.createUser({
       name,
       email,
       phoneNumber,
@@ -35,7 +35,7 @@ export class AuthService {
   public async login(credentials: LoginCredentials): Promise<string> {
     this.validateLoginCredentials(credentials);
 
-    const user = await this.userRepository.findByEmail(credentials.email);
+    const user = await this.authRepository.findByEmail(credentials.email);
     if (!user || !(await this.passwordService.comparePasswords(credentials.password, user.password))) {
       throw new Error("Invalid email or password.");
     }
@@ -47,17 +47,17 @@ export class AuthService {
   public async changePassword(request: PasswordChangeRequest): Promise<void> {
     this.validatePasswordChangeRequest(request);
 
-    const user = await this.userRepository.findByEmail(request.email);
+    const user = await this.authRepository.findByEmail(request.email);
     if (!user) {
       throw new Error("User not found.");
     }
 
     const hashedPassword = await this.passwordService.hashPassword(request.newPassword);
-    await this.userRepository.updatePassword(request.email, hashedPassword);
+    await this.authRepository.updatePassword(request.email, hashedPassword);
   }
 
   private async ensureUserDoesNotExist(email: string, username: string): Promise<void> {
-    const existingUser = await this.userRepository.findByEmailOrUsername(email, username);
+    const existingUser = await this.authRepository.findByEmailOrUsername(email, username);
     if (existingUser) {
       throw new Error(existingUser.email === email ? "Email already registered." : "Username already taken.");
     }

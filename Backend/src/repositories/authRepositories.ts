@@ -1,7 +1,7 @@
 import User from "../models/userModal";
 
 // Handle a User Details
-export class UserRepository {
+export class AuthRepository {
   public async findByEmail(email: string) {
     return User.findOne({ email });
   }

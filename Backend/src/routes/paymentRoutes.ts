@@ -5,7 +5,7 @@ import { PaymentRepository } from "../repositories/paymentReporitories";
 import { EmailService } from "../services/emailService";
 import { EventAttendeeService } from "../services/eventAttendeeService";
 import { UserRepository } from "../repositories/userRepositories";
-import { EventRepository } from "../repositories/eventAttendeeRepositories";
+import { EventAttendeeRepository } from "../repositories/eventAttendeeRepositories";
 
 const router = Router();
 
@@ -13,7 +13,7 @@ const router = Router();
 const paymentRepository = new PaymentRepository();
 const emailService = new EmailService();
 const userRepository = new UserRepository();
-const eventAttendeeRepository = new EventRepository();
+const eventAttendeeRepository = new EventAttendeeRepository();
 
 
 const eventAttendeeService = new EventAttendeeService(eventAttendeeRepository);

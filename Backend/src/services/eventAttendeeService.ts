@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { EventRepository } from "../repositories/eventAttendeeRepositories";
+import { EventAttendeeRepository } from "../repositories/eventAttendeeRepositories";
 
 
 
@@ -7,9 +7,9 @@ import { EventRepository } from "../repositories/eventAttendeeRepositories";
  // Service for managing event attendees.
  
 class EventAttendeeService {
-  private eventRepository: EventRepository;
+  private eventRepository: EventAttendeeRepository;
 
-  constructor(eventRepository: EventRepository) {
+  constructor(eventRepository: EventAttendeeRepository) {
     this.eventRepository = eventRepository;
   }
 
@@ -38,6 +38,11 @@ class EventWrapper {
 
   constructor(event: any) {
     this.event = event;
+  }
+
+  
+  public getEvent(): Event {
+    return this.event;
   }
 
   

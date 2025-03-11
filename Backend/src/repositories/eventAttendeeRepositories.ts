@@ -3,7 +3,7 @@ import { EventWrapper } from "../services/eventAttendeeService";
 
 // Repository for handling event data persistence.
  
-class EventRepository {
+class EventAttendeeRepository {
   async findById(eventId: string): Promise<EventWrapper | null> {
     const event = await Event.findById(eventId);
     return event ? new EventWrapper(event) : null;
@@ -14,4 +14,4 @@ class EventRepository {
   }
 }
 
-export { EventRepository };
+export { EventAttendeeRepository };
