@@ -17,7 +17,7 @@ export class UserController {
    * @param req - The HTTP request object, which may contain an authenticated user.
    * @param res - The HTTP response object.
    */
-  async handleGetUserProfile(req: AuthRequest, res: Response): Promise<void> {
+  async getUserProfile(req: AuthRequest, res: Response): Promise<void> {
     if (!this.hasValidUser(req)) return this.respondWithBadRequest(res);
 
     try {

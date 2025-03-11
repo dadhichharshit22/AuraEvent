@@ -1,4 +1,4 @@
-import { razorpayInstance } from "../config/razorpayConnection";
+import { createRazorpayInstance } from "../config/razorpayConnection";
 
 class PaymentGateway {
   private static readonly CURRENCY = "INR";
@@ -6,8 +6,9 @@ class PaymentGateway {
 
   static async createOrder(amount: number): Promise<{ id: string; status: string }> {
     try {
+      const razorpay = createRazorpayInstance(); // Initialize Razorpay instance
       const options = this.getOrderOptions(amount);
-      const order = await razorpayInstance.orders.create(options);
+      const order = await razorpay.orders.create(options);
       return order;
     } catch (error) {
       console.error("Error creating Razorpay order:", error);

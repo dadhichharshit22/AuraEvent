@@ -1,12 +1,14 @@
 import { UserRepository } from "../repositories/authRepositories";
-import  PasswordService  from "../utils/passwordHelper";
+import PasswordService from "../utils/passwordHelper";
 import jwt from "jsonwebtoken";
-import {LoginCredentials,RegistrationData,PasswordChangeRequest} from "../types/authTypes";
-
-
+import { LoginCredentials, RegistrationData, PasswordChangeRequest } from "../types/authTypes";
 
 export class AuthService {
-  constructor(private readonly userRepository: UserRepository) {}
+  private readonly passwordService: PasswordService;
+
+  constructor(private readonly userRepository: UserRepository) {
+    this.passwordService = new PasswordService();
+  }
 
   public async register(userData: RegistrationData): Promise<string> {
     this.validateRegistrationData(userData);
@@ -15,7 +17,7 @@ export class AuthService {
 
     await this.ensureUserDoesNotExist(email, username);
 
-    const hashedPassword = await PasswordService.hashPassword(password); // ✅ Use static method directly
+    const hashedPassword = await this.passwordService.hashPassword(password);
 
     const newUser = await this.userRepository.createUser({
       name,
@@ -32,7 +34,7 @@ export class AuthService {
     this.validateLoginCredentials(credentials);
 
     const user = await this.userRepository.findByEmail(credentials.email);
-    if (!user || !(await PasswordService.verifyPassword(credentials.password, user.password))) {
+    if (!user || !(await this.passwordService.comparePasswords(credentials.password, user.password))) {
       throw new Error("Invalid email or password.");
     }
 
@@ -47,7 +49,7 @@ export class AuthService {
       throw new Error("User not found.");
     }
 
-    const hashedPassword = await PasswordService.hashPassword(request.newPassword); 
+    const hashedPassword = await this.passwordService.hashPassword(request.newPassword);
     await this.userRepository.updatePassword(request.email, hashedPassword);
   }
 

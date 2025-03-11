@@ -1,7 +1,7 @@
 import express from "express";
 import connectDatabase from "./config/databaseConnection";
 import corsMiddleware from "./middlewares/corsMiddleware";
-import routes from "./routes/index.js";
+import routes from "./routes/index"
 const app = express();
 
 connectDatabase();

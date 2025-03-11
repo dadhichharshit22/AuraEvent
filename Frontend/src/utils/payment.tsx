@@ -14,40 +14,42 @@ function loadScript(src: string): Promise<boolean> {
   });
 }
 
+interface UserDetails {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
 export async function payEventFee(
   token: string,
   eventId: string,
   userId: string,
-  userDetails: { firstName: string; lastName: string; email: string }
+  userDetails: UserDetails
 ): Promise<void> {
   const toastId = toast.loading("Loading...");
   try {
-    const res = await loadScript(
-      "https://checkout.razorpay.com/v1/checkout.js"
-    );
-
+    const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
     if (!res) {
       toast.error("RazorPay SDK failed to load");
       return;
     }
-    console.log("eventId", eventId);
-    console.log("token", token);
-    console.log("userDetails", userDetails);
-    // Initiate the order
+
     const orderResponse = await axios.post(
-      `http://localhost:8085/api/pay/capturePayment`,
+      "http://localhost:8085/api/pay/capturePayment",
       { eventId },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
 
     if (!orderResponse.data.success) {
       throw new Error(orderResponse.data.message);
     }
 
-    console.log("orderResponse", orderResponse);
-    // Razorpay options
     const options = {
       key: RAZORPAY_KEY,
       currency: orderResponse.data.message.currency,
@@ -83,7 +85,7 @@ export async function payEventFee(
           preferences: { show_default_blocks: true },
         },
       },
-      handler: (response: any) => {
+      handler: (response: RazorpayResponse) => {
         verifyPayment({ ...response, eventId, userId }, token);
       },
     };
@@ -93,22 +95,23 @@ export async function payEventFee(
     paymentObject.on("payment.failed", () => {
       toast.error("Oops, Payment Failed");
     });
-  } catch (error: any) {
+  } catch (error) {
     toast.error("Could not make Payment");
   } finally {
     toast.dismiss(toastId);
   }
 }
 
-async function verifyPayment(bodyData: any, token: string): Promise<void> {
+async function verifyPayment(
+  bodyData: RazorpayResponse & { eventId: string; userId: string },
+  token: string
+): Promise<void> {
   const toastId = toast.loading("Verifying Payment...");
   try {
     const response = await axios.post(
-      `http://localhost:8085/api/pay/verifyPayment`,
+      "http://localhost:8085/api/pay/verifyPayment",
       bodyData,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
 
     if (!response.data.success) {
@@ -116,7 +119,7 @@ async function verifyPayment(bodyData: any, token: string): Promise<void> {
     }
 
     toast.success("Payment Successful, you are added to the course");
-  } catch (error: any) {
+  } catch (error) {
     toast.error("Could not verify Payment");
   } finally {
     toast.dismiss(toastId);

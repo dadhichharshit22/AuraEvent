@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { getUserIdFromToken } from "../utils/userFromToken";
+import { extractUserIdFromJwt } from "../utils/userFromToken";
 import {
   Calendar,
   MapPin,
@@ -64,7 +64,7 @@ const EventDetails: React.FC = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const userId = getUserIdFromToken();
+    const userId = extractUserIdFromJwt();
 
     axios
       .get(`http://localhost:8085/api/events/${id}`, {
@@ -83,7 +83,7 @@ const EventDetails: React.FC = () => {
   }, [id]);
 
   const handleRegister = async () => {
-    const userId = getUserIdFromToken();
+    const userId = extractUserIdFromJwt();
     const token = localStorage.getItem("token");
 
     try {
@@ -129,7 +129,7 @@ const EventDetails: React.FC = () => {
   };
 
   const handleUnregister = async () => {
-    const userId = getUserIdFromToken();
+    const userId = extractUserIdFromJwt();
     const token = localStorage.getItem("token");
     console.log(userId);
     console.log(token);

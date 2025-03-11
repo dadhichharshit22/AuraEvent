@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 
-interface DecodedToken {
+interface JwtPayload {
   userId: string;
   exp?: number;
   iat?: number;
@@ -8,25 +8,49 @@ interface DecodedToken {
   roles?: string[];
 }
 
-export const getUserIdFromToken = (): string | null => {
+/**
+ * Retrieves the stored authentication token from localStorage.
+ * Returns `null` if no token is found.
+ */
+const getStoredAuthToken = (): string | null => {
+  return localStorage.getItem("token");
+};
+
+/**
+ * Decodes the JWT and extracts the user ID.
+ * If the token is invalid, it removes it from localStorage to prevent future issues.
+ */
+export const extractUserIdFromJwt = (): string | null => {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.warn("No token found in localStorage");
+    const storedToken = getStoredAuthToken();
+
+    if (!storedToken) {
+      console.warn(
+        "Authentication token is missing. User is not logged in."
+      );
       return null;
     }
 
-    const decoded = jwtDecode<DecodedToken>(token);
+    const decodedPayload = jwtDecode<JwtPayload>(storedToken);
 
-    if (!decoded.userId) {
-      console.error("Token does not contain userId");
+    if (!decodedPayload.userId) {
+      console.error(
+        "Decoded JWT is missing userId. Possible malformed token."
+      );
       return null;
     }
 
-    return decoded.userId;
+    return decodedPayload.userId;
   } catch (error) {
-    console.error("Error decoding token:", error);
+    console.error(
+      "Invalid or expired JWT detected. Removing token.", 
+      error
+    );
+    
     localStorage.removeItem("token");
     return null;
   }
 };
+
+
+// till chapter 5
