@@ -1,278 +1,107 @@
-
 import { Request, Response } from "express";
-import {Event} from "../models/eventModal";
-import User, { IUser } from "../models/userModal";
-import { EmailService } from "../services/emailService";
+import EventService from "../services/eventService";
 
 interface AuthRequest extends Request {
-  user?: IUser;
+  user?: any;
 }
 
-// Controller of Controlling all the operation of Event
 class EventController {
-  private emailService: EmailService;
-
-  constructor() {
-    this.emailService = new EmailService();
+  public async createEvent(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const event = await EventService.createEvent(req.body, req.user);
+      res.status(201).json(event);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Server error";
+      res.status(500).json({ message: errorMessage });
+    }
   }
-  // Handle Create Event
-  public createEvent = async (req: AuthRequest, res: Response): Promise<void> => {
-    const { 
-      title, 
-      description, 
-      date, 
-      location, 
-      category, 
-      image, 
-      price = 0, 
-      type, 
-      capacity 
-    } = req.body;
 
+  public async updateEvent(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const newEvent = new Event({
-        title,
-        description,
-        date,
-        location,
-        category,
-        organizer: req.user?._id,
-        image,
-        price,
-        type,
-        capacity,
-        attendees: [],
-      });
-
-      const savedEvent = await newEvent.save();
-
-      
-      if (req.user?.email) {
-        await this.emailService.notifyEventCreation(
-          req.user.email,
-          title,
-          date.toString(),
-          description
-        );
-      }
-
-      
-      const users = await User.find();
-      await Promise.all(
-        users.map(user =>
-          this.emailService.notifyNewEvent(
-            user.email,
-            title,
-            date.toString(),
-            description
-          ).catch(error => 
-            console.error(`Failed to send notification to ${user.email}:`, error)
-          )
-        )
-      );
-
-      res.status(201).json(savedEvent);
-    } catch (error) {
-      console.error("Error creating event:", error);
-      res.status(500).json({ message: "Server error" });
-    }
-  };
-
-   // Handle Update Event
-  public updateEvent = async (req: AuthRequest, res: Response): Promise<void> => {
-    const { 
-      title,
-      description,
-      date,
-      location,
-      image,
-      price,
-      type,
-      capacity 
-    } = req.body;
-
-    try {
-      const event = await Event.findByIdAndUpdate(
-        req.params.id,
-        { 
-          title, 
-          description, 
-          date, 
-          location, 
-          image, 
-          price, 
-          type, 
-          capacity 
-        },
-        { new: true, runValidators: true }
-      );
-
+      const event = await EventService.updateEvent(req.params.id, req.body);
       if (!event) {
         res.status(404).json({ message: "Event not found" });
         return;
       }
-
-      
-      const attendeeUsers = await User.find({
-        _id: { $in: event.attendees }
-      });
-
-      await Promise.all(
-        attendeeUsers.map(user =>
-          this.emailService.notifyEventUpdate(
-            user.email,
-            title,
-            date.toString(),
-            description
-          ).catch(error => 
-            console.error(`Failed to send update notification to ${user.email}:`, error)
-          )
-        )
-      );
-
       res.json(event);
-    } catch (error) {
-      res.status(500).json({ message: "Server error" });
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Server error";
+      res.status(500).json({ message: errorMessage });
     }
-  };
-    // Handle register User For Event
-  public registerForEvent = async (req: Request, res: Response): Promise<void> => {
-    const { userId } = req.body;
-    const { id } = req.params;
+  }
 
+  public async registerForEvent(req: Request, res: Response): Promise<void> {
     try {
-      const event = await Event.findById(id);
-      if (!event) {
-        res.status(404).json({ message: "Event not found" });
-        return;
-      }
-
-      if (event.attendees.includes(userId)) {
-        res.status(400).json({ message: "User already registered for this event" });
-        return;
-      }
-
-      event.attendees.push(userId);
-      await event.save();
-
-      const user = await User.findById(userId);
-      if (user) {
-        await this.emailService.confirmRegistration(
-          user.email,
-          event.title,
-          event.date.toString()
-        );
-      }
-
-      res.status(200).json({ message: "Registered successfully" });
-    } catch (error) {
-      res.status(500).json({ message: "Server error" });
+      const response = await EventService.registerForEvent(req.params.id, req.body.userId);
+      res.status(200).json(response);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Bad request";
+      res.status(400).json({ message: errorMessage });
     }
-  };
+  }
 
-  public unregisterFromEvent = async (req: Request, res: Response): Promise<void> => {
-    const { userId } = req.body;
-    const { id } = req.params;
-
+  public async unregisterFromEvent(req: Request, res: Response): Promise<void> {
     try {
-      const event = await Event.findById(id);
-      if (!event) {
-        res.status(404).json({ message: "Event not found" });
-        return;
-      }
-
-      if (!event.attendees.includes(userId)) {
-        res.status(400).json({ message: "User not registered for this event" });
-        return;
-      }
-
-      event.attendees = event.attendees.filter(
-        attendee => attendee.toString() !== userId
-      );
-      await event.save();
-
-      const user = await User.findById(userId);
-      if (user) {
-        await this.emailService.confirmUnregistration(
-          user.email,
-          event.title,
-          event.date.toString()
-        );
-      }
-
-      res.status(200).json({ message: "Unregistered successfully" });
-    } catch (error) {
-      res.status(500).json({ message: "Server error" });
+      const response = await EventService.unregisterFromEvent(req.params.id, req.body.userId);
+      res.status(200).json(response);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Bad request";
+      res.status(400).json({ message: errorMessage });
     }
-  };
+  }
 
-  
-  public deleteEvent = async (req: Request, res: Response): Promise<void> => {
+  public async deleteEvent(req: Request, res: Response): Promise<void> {
     try {
-      const event = await Event.findByIdAndDelete(req.params.id);
+      const event = await EventService.deleteEvent(req.params.id);
       if (!event) {
         res.status(404).json({ message: "Event not found" });
         return;
       }
       res.json({ message: "Event deleted successfully" });
-    } catch (error) {
+    } catch (error: unknown) {
       res.status(500).json({ message: "Server error" });
     }
-  };
+  }
 
-  public getEventById = async (req: Request, res: Response): Promise<void> => {
+  public async getEventById(req: Request, res: Response): Promise<void> {
     try {
-      const event = await Event.findById(req.params.id);
+      const event = await EventService.getEventById(req.params.id);
       if (!event) {
         res.status(404).json({ message: "Event not found" });
         return;
       }
       res.json(event);
-    } catch (error) {
-      console.error("Error getting event details:", error);
+    } catch (error: unknown) {
       res.status(500).json({ message: "Server error" });
     }
-  };
+  }
 
-  public getAllEvents = async (req: Request, res: Response): Promise<void> => {
+  public async getAllEvents(req: Request, res: Response): Promise<void> {
     try {
-      const events = await Event.find();
+      const events = await EventService.getAllEvents();
       res.json(events);
-    } catch (error) {
-      console.error("Error fetching all events:", error);
+    } catch (error: unknown) {
       res.status(500).json({ message: "Server error" });
     }
-  };
+  }
 
-  public getUserCreatedEvents = async (req: AuthRequest, res: Response): Promise<void> => {
-    if (!req.user?._id) {
-      res.status(401).json({ message: "User not authenticated" });
-      return;
-    }
-
+  public async getUserCreatedEvents(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const events = await Event.find({ organizer: req.user._id });
+      const events = await EventService.getUserCreatedEvents(req.user._id);
       res.json(events);
-    } catch (error) {
-      console.error("Error fetching created events:", error);
+    } catch (error: unknown) {
       res.status(500).json({ message: "Server error" });
     }
-  };
+  }
 
-  public getUserRegisteredEvents = async (req: AuthRequest, res: Response): Promise<void> => {
-    if (!req.user?._id) {
-      res.status(401).json({ message: "User not authenticated" });
-      return;
-    }
-
+  public async getUserRegisteredEvents(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const events = await Event.find({ attendees: req.user._id });
+      const events = await EventService.getUserRegisteredEvents(req.user._id);
       res.json(events);
-    } catch (error) {
-      console.error("Error fetching registered events:", error);
+    } catch (error: unknown) {
       res.status(500).json({ message: "Server error" });
     }
-  };
+  }
 }
 
 export default new EventController();

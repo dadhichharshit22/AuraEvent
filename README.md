@@ -54,6 +54,7 @@ EMAIL_USERNAME = your email_id
 EMAIL_PASSWORD = your_password
 RAZORPAY_KEY = your razorpay key
 RAZORPAY_SECRET = your razorpay secret key
+CORS_ORIGIN = your frontend url
 ```
 
 4. Start the backend server:
