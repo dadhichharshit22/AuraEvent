@@ -2,6 +2,7 @@ import express from "express";
 import connectDatabase from "./config/databaseConnection";
 import corsMiddleware from "./middlewares/corsMiddleware";
 import routes from "./routes/index"
+import cookie-parser from "cookie-parser";
 const app = express();
 
 connectDatabase();

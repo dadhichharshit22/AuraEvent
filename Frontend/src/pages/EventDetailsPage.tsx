@@ -23,6 +23,8 @@ import { EventModal } from "@/components/events/EventModal";
 import { payEventFee } from "@/utils/payment";
 import { Event, TimeLeft } from "@/types/eventProps";
 import EventDetailItem from "@/components/events/event-details/EventDetailItem";
+import { Instagram, Linkedin } from "lucide-react";
+
 
 const EventDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -61,7 +63,7 @@ const EventDetails: React.FC = () => {
 
     return () => clearInterval(timer);
   }, [event]);
-
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = extractUserIdFromJwt();
@@ -73,6 +75,7 @@ const EventDetails: React.FC = () => {
       .then((response) => {
         setEvent(response.data);
         setIsRegistered(response.data.attendees.includes(userId));
+        setQrCodeUrl(response.data.qrCodeUrl); 
       })
       .catch((error) => {
         console.error("Error fetching event details:", error);
@@ -265,7 +268,14 @@ const EventDetails: React.FC = () => {
                   </p>
                 </div>
               )}
+              {isRegistered && qrCodeUrl && (
+  <div className="mt-6 text-center">
+    <h3 className="font-medium text-lg text-purple-700">Your Event QR Code</h3>
+    <img src={qrCodeUrl} alt="Event QR Code" className="w-40 h-40 mx-auto mt-2 border border-gray-300 rounded-lg shadow-lg" />
+  </div>
+)}
               {isRegistered ? (
+                
                 <Button
                   variant="destructive"
                   className="w-full"
@@ -307,6 +317,7 @@ const EventDetails: React.FC = () => {
                     rel="noopener noreferrer"
                   >
                     {/* <Instagram /> */}
+                    <Instagram className="w-5 h-5" />  
                   </a>
                 </Button>
                 <Button
@@ -321,6 +332,7 @@ const EventDetails: React.FC = () => {
                     rel="noopener noreferrer"
                   >
                     {/* <Linkedin /> */}
+                    <Linkedin className="w-5 h-5" />
                   </a>
                 </Button>
               </div>

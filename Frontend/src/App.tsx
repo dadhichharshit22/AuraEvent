@@ -22,6 +22,7 @@ import ChangePassword from "./pages/ChangePasswordPage";
 import { useAuth } from "./hooks/useAuth";
 import { useEvents } from "./hooks/useEvent";
 
+
 const App: React.FC = () => {
   const { auth, setIsRegistered, handleRegister, handleLogout } = useAuth();
   const { filteredEvents, setFilteredEvents, handleSearch } = useEvents();

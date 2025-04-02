@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import EventCard from "@/components/events/EventCard";
 import ImageCarousel from "@/components/common/ImageCarousal";
 import { useFetchEvents } from "../hooks/useFetchEvent";
+import CookieBanner from "@/components/common/CookieBanner";
 
 interface HomepageProps {
   filteredEvents: any[];
@@ -36,6 +37,7 @@ const HomePage: React.FC<HomepageProps> = ({ filteredEvents, setFilteredEvents }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <CookieBanner/>
       <ImageCarousel />
       <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <section className="space-y-8">

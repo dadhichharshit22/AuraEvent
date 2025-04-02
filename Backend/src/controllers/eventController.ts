@@ -8,7 +8,7 @@ interface AuthRequest extends Request {
 class EventController {
   public async createEvent(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const event = await EventService.createEvent(req.body, req.user);
+      const event = await EventService.createEvent(req.body, req.user,req);
       res.status(201).json(event);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Server error";
