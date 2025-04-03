@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import React from "react";
+
+
 const CookieBanner = () => {
   const [showBanner, setShowBanner] = useState(false);
 
@@ -9,9 +11,15 @@ const CookieBanner = () => {
     if (!consent) setShowBanner(true);
   }, []);
 
-  const handleAccept = () => {
-    Cookies.set("userConsent", "accepted", { expires: 30, path: "/" }); // Store cookie for 30 days
+  const handleAccept = async () => {
+    Cookies.set("userConsent", "accepted", { expires: 30, path: "/" });
     setShowBanner(false);
+
+    // Send consent to backend
+    await fetch("http://localhost:5000/set-cookie-consent", {
+      method: "POST",
+      credentials: "include",
+    });
   };
 
   const handleDecline = () => {

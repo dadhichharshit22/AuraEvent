@@ -2,12 +2,13 @@ import express from "express";
 import connectDatabase from "./config/databaseConnection";
 import corsMiddleware from "./middlewares/corsMiddleware";
 import routes from "./routes/index"
-import cookie-parser from "cookie-parser";
+import cookieParser from "cookie-parser";
 const app = express();
 
 connectDatabase();
 
 app.use(corsMiddleware);
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
