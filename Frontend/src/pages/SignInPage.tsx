@@ -1,22 +1,26 @@
-import React from "react";
-import { LoginCredentials } from "../types/loginProps";
-import { useLogin } from "../hooks/useLogin";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import { login } from "../store/slices/authSlice";
+import { LoginCredentials } from "../types/authProps";
 import { useLoginForm } from "../hooks/useLoginForm";
 import { LoginForm } from "../components/auth/LoginForm";
 import ilus from "@/assets/illus.png";
+import { useNavigate } from "react-router-dom";
 
-interface LoginProps {
-  onLogin: (token: string) => void;
-}
+const Login: React.FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading: isLoading } = useSelector((state: RootState) => state.auth);
 
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const { login, isLoading } = useLogin(onLogin);
-  const { values, handleChange, handleSubmit } = useLoginForm<LoginCredentials>(
-    {
-      initialValues: { email: "", password: "" },
-      onSubmit: login,
-    }
-  );
+  const handleLogin = async (credentials: LoginCredentials) => {
+    await dispatch(login(credentials));
+  };
+
+  const { values, handleChange, handleSubmit } = useLoginForm<LoginCredentials>({
+    initialValues: { email: "", password: "" },
+    onSubmit: handleLogin,
+  });
 
   return (
     <div className="flex gap-2 justify-between h-screen text-black">

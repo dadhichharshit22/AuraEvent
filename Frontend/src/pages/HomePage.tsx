@@ -1,24 +1,26 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import EventCard from "@/components/events/EventCard";
 import ImageCarousel from "@/components/common/ImageCarousal";
-import { useFetchEvents } from "../hooks/useFetchEvent";
 import CookieBanner from "@/components/common/CookieBanner";
+import { Event } from "../types/eventProps";
 
 interface HomepageProps {
-  filteredEvents: any[];
-  setFilteredEvents: React.Dispatch<React.SetStateAction<any[]>>;
+  filteredEvents: Event[];
   isRegistered: boolean;
   onLogout: () => void;
 }
 
-const HomePage: React.FC<HomepageProps> = ({ filteredEvents, setFilteredEvents }) => {
-  const { events, loading } = useFetchEvents(setFilteredEvents);
+const HomePage: React.FC<HomepageProps> = ({ filteredEvents }) => {
   const navigate = useNavigate();
+  const { events, loading } = useSelector((state: RootState) => state.events);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   const handleExplore = (eventId: string) => {
-    if (!localStorage.getItem("token")) {
+    if (!isAuthenticated) {
       toast.error("Unauthorized. Please Sign In to explore the event.");
       return;
     }
@@ -32,7 +34,6 @@ const HomePage: React.FC<HomepageProps> = ({ filteredEvents, setFilteredEvents }
       </div>
     );
   }
-
   const displayedEvents = filteredEvents.length > 0 ? filteredEvents : events;
 
   return (

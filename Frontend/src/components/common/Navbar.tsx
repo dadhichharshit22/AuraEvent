@@ -1,5 +1,9 @@
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store";
+import { logout } from "../../store/slices/authSlice";
+import { filterEvents } from "../../store/slices/eventSlice";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "../ui/button";
@@ -23,23 +27,20 @@ import {
 interface NavbarProps {
   isRegistered: boolean;
   onLogout: () => void;
-  setIsRegistered: React.Dispatch<React.SetStateAction<boolean>>;
   onSearch: (params: { location: string; tags: string; month: string }) => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
   isRegistered,
   onLogout,
-  setIsRegistered,
   onSearch,
 }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleLogout = () => {
-    onLogout();
-    toast.success("Logged out successfully");
-    setIsRegistered(false);
+    dispatch(logout());
     navigate("/");
   };
 

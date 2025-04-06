@@ -1,6 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
+// Extend Express Request type to include user property
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
+  }
+}
+
 // Middleware to authenticate user using cookie
 export const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.authToken;

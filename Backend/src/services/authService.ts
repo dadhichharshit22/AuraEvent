@@ -28,36 +28,8 @@ export class AuthService {
       password: hashedPassword,
       username,
     });
-    // Mobile number verification
-  // Send OTP to user's phone number
- // const message = `Your OTP is ${otp}`;
-
-  // try {
-  //   // Data to send in the request
-  //   const data = new URLSearchParams({
-  //     variables_values: otp,
-  //     route: "p",
-  //     numbers: phoneNumber
-  //   }).toString();
-
-  //   // Make the API call
-  //   const response = await axios({
-  //     method: 'post',
-  //     url: 'https://www.fast2sms.com/dev/bulkV2',
-  //     headers: {
-  //       'authorization': "FPFL2pigtHzVJuju3Z9KmRbW7LrkbJJVnRQVvMveBQ5HSD1jRZ5EEXw0titO",
-  //       'Content-Type': 'application/x-www-form-urlencoded',
-  //       'api-key': 'FPFL2pigtHzVJuju3Z9KmRbW7LrkbJJVnRQVvMveBQ5HSD1jRZ5EEXw0titO',
-  //     },
-  //     data: data
-  //   });
-  //   // console.log(response.data);
-  //   console.log('SMS sent successfully:', response.data);
-  //   res.status(200).json({ message: 'OTP sent successfully', otp });
-  // } catch (error: any) {
-  //   console.error('Error sending SMS:', error);
-  //   res.status(500).json({ message: 'Error sending OTP', error });
-  // }
+    // Mobile number verification is handled separately in the OTP service
+    // This commented code is removed to avoid errors
 
     return this.createAuthToken(newUser.id);
   }
@@ -72,7 +44,7 @@ export class AuthService {
 
     return this.createAuthToken(user.id);
   }
-  
+
   // handle a changePassword
   public async changePassword(request: PasswordChangeRequest): Promise<void> {
     this.validatePasswordChangeRequest(request);

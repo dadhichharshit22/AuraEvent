@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AuthService } from "../services/authService";
 
-// Handle Authentication 
+// Handle Authentication
 export class AuthenticationController {
   constructor(private authService: AuthService) {}
 
@@ -9,15 +9,24 @@ export class AuthenticationController {
     try {
       const token = await this.authService.register(req.body);
 
-      res.status(201).json({ 
-        success: true, 
-        token 
+      // Set the token as a cookie
+      res.cookie("authToken", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        sameSite: "strict"
+      });
+
+      res.status(201).json({
+        success: true,
+        token,
+        email: req.body.email
       });
 
     } catch (error) {
-      res.status(500).json({ 
-        success: false, 
-        message: this.getErrorMessage(error) 
+      res.status(500).json({
+        success: false,
+        message: this.getErrorMessage(error)
       });
     }
   }
@@ -26,15 +35,24 @@ export class AuthenticationController {
     try {
       const token = await this.authService.login(req.body);
 
-      res.status(200).json({ 
-        success: true, 
-        token 
+      // Set the token as a cookie
+      res.cookie("authToken", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        sameSite: "strict"
+      });
+
+      res.status(200).json({
+        success: true,
+        token,
+        email: req.body.email
       });
 
     } catch (error) {
-      res.status(400).json({ 
-        success: false, 
-        message: this.getErrorMessage(error) 
+      res.status(400).json({
+        success: false,
+        message: this.getErrorMessage(error)
       });
     }
   }
@@ -43,26 +61,26 @@ export class AuthenticationController {
     try {
       await this.authService.changePassword(req.body);
 
-      res.status(200).json({ 
-        success: true, 
-        message: "Password updated successfully" 
+      res.status(200).json({
+        success: true,
+        message: "Password updated successfully"
       });
 
     } catch (error) {
-      res.status(400).json({ 
-        success: false, 
-        message: this.getErrorMessage(error) 
+      res.status(400).json({
+        success: false,
+        message: this.getErrorMessage(error)
       });
     }
-    
+
   }
 
-  
-  public async setCookieConsent(req: Request, res: Response): Promise<void> {
+
+  public async setCookieConsent(_req: Request, res: Response): Promise<void> {
     try {
       res.cookie("userConsent", "accepted", {
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days expiration
-        httpOnly: true, 
+        httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
       });

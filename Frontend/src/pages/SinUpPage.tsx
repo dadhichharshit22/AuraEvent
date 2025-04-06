@@ -1,25 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import { register } from "../store/slices/authSlice";
 import { Mail, Lock, User, UserCircle, Phone } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
 import ilus from "@/assets/illus.png";
 import { FormInput } from "../components/common/FormInput";
 import { OTPSection } from "../components/auth/OTPSection";
-import { useRegistration } from "../hooks/useRegistration";
+import { toast } from "react-toastify";
+import { RegistrationData } from "../types/authProps";
 
-interface RegisterPageProps {
-  onRegister: (token: string) => void;
-}
+const RegisterPage: React.FC = () => {
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state: RootState) => state.auth);
 
-const RegisterPage: React.FC<RegisterPageProps> = ({ onRegister }) => {
-  const {
-    formData,
-    otp,
-    otpSent,
-    setOtp,
-    handleInputChange,
-    handleSendOTP,
-    handleVerifyOTP,
-  } = useRegistration(onRegister);
+  const [formData, setFormData] = useState<RegistrationData>({
+    name: "",
+    email: "",
+    username: "",
+    phoneNumber: "",
+    password: "",
+  });
+
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+
+  const handleInputChange = (field: keyof RegistrationData) => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormData({ ...formData, [field]: e.target.value });
+  };
+
+  const handleSendOTP = () => {
+    // Validate form data
+    if (!formData.email || !formData.password || !formData.name || !formData.username || !formData.phoneNumber) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    // In a real app, you would call an API to send OTP
+    // For now, we'll just simulate it
+    toast.success("OTP sent to your phone");
+    setOtpSent(true);
+  };
+
+  const handleVerifyOTP = async () => {
+    // In a real app, you would verify the OTP with an API
+    // For now, we'll just simulate it and register the user
+    if (otp.length !== 4) {
+      toast.error("Please enter a valid OTP");
+      return;
+    }
+
+    try {
+      await dispatch(register(formData));
+      toast.success("Registration successful!");
+    } catch (error) {
+      toast.error("Registration failed. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex justify-center items-center px-4 py-8">
