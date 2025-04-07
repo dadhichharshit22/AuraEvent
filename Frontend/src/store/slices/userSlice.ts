@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { fetchProfileData } from '../../api/ProfileAPI';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { authApi } from '../../api/apiService';
 import { ProfileData } from '../../types/profileProps';
 import { toast } from 'react-toastify';
 
@@ -20,43 +20,56 @@ export const fetchUserProfile = createAsyncThunk(
   'user/fetchProfile',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No token found');
-      }
-      
-      const data = await fetchProfileData(token);
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch profile');
+      const response = await authApi.getProfile();
+      return response.data;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch profile';
+      return rejectWithValue(errorMessage);
     }
   }
 );
 
+// Default profile data for when the API call fails or user is not logged in
+export const getDefaultProfile = () => ({
+  name: "John Doe",
+  username: "johndoe",
+  role: "User",
+  avatarSrc: "/placeholder-avatar.jpg",
+  email: "johndoe@example.com",
+  phoneNumber: "N/A",
+  location: "Unknown",
+  age: "N/A",
+  createdAt: new Date().toISOString(),
+  type: "Basic",
+  capacity: 0,
+  bio: "This user has not provided a bio.",
+  interests: [],
+  socialMedia: {
+    twitter: "https://twitter.com/johndoe",
+    linkedin: "https://linkedin.com/in/johndoe",
+    instagram: "https://instagram.com/johndoe",
+  },
+});
+
 // Async thunk for updating user profile
 export const updateUserProfile = createAsyncThunk(
   'user/updateProfile',
-  async (profileData: Partial<ProfileData>, { rejectWithValue, dispatch }) => {
+  async (profileData: Partial<ProfileData>, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No token found');
-      }
-      
-      // Implement the API call to update profile
-      // This is a placeholder - you'll need to create this API function
-      // const response = await updateProfile(token, profileData);
-      
+      // This is a placeholder - you'll need to implement the API call
+      // const response = await authApi.updateProfile(profileData);
+
       // For now, we'll just simulate a successful update
       toast.success('Profile updated successfully');
-      
+
       // Refresh the profile data
-      dispatch(fetchUserProfile());
-      
+      // We'll handle this in the component after the update is complete
+
       return profileData;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile';
       toast.error('Failed to update profile');
-      return rejectWithValue(error.message || 'Failed to update profile');
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -76,9 +89,9 @@ const userSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUserProfile.fulfilled, (state, action: PayloadAction<ProfileData>) => {
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.profile = action.payload;
+        state.profile = action.payload as ProfileData;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;

@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { EventService } from '../../api/AppAPI';
+import { eventsApi, getUserIdFromToken } from '../../api/apiService';
 import { Event, SearchParams } from '../../types/eventProps';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 
 interface EventState {
@@ -11,6 +10,7 @@ interface EventState {
   registeredEvents: Event[];
   loading: boolean;
   error: string | null;
+  isRegistered: boolean;
 }
 
 const initialState: EventState = {
@@ -20,6 +20,7 @@ const initialState: EventState = {
   registeredEvents: [],
   loading: false,
   error: null,
+  isRegistered: false,
 };
 
 // Async thunks for events
@@ -27,11 +28,11 @@ export const fetchAllEvents = createAsyncThunk(
   'events/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const eventService = EventService.getInstance();
-      const events = await eventService.getAllEvents();
-      return events;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch events');
+      const response = await eventsApi.getAllEvents();
+      return response.data;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch events';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -40,16 +41,51 @@ export const fetchEventById = createAsyncThunk(
   'events/fetchById',
   async (id: string, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8085/api/events/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return response.data;
-    } catch (error: any) {
-      if (error.response?.status === 401) {
-        toast.error('Unauthorized. Please log in again.');
-      }
-      return rejectWithValue(error.message || 'Failed to fetch event details');
+      const response = await eventsApi.getEventById(id);
+
+      // Get user ID from token to check if user is registered
+      const userId = getUserIdFromToken();
+      const event = response.data as Event;
+      const isUserRegistered = event.attendees?.includes(userId) || false;
+
+      return {
+        event,
+        isRegistered: isUserRegistered
+      };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch event details';
+      toast.error('Failed to fetch event details');
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const registerForEvent = createAsyncThunk(
+  'events/register',
+  async ({ eventId, userId }: { eventId: string, userId: string }, { rejectWithValue }) => {
+    try {
+      await eventsApi.registerForEvent(eventId, userId);
+      toast.success('Successfully registered for the event');
+      return { eventId, userId };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to register for event';
+      toast.error('Failed to register for event');
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const unregisterFromEvent = createAsyncThunk(
+  'events/unregister',
+  async ({ eventId, userId }: { eventId: string, userId: string }, { rejectWithValue }) => {
+    try {
+      await eventsApi.unregisterFromEvent(eventId, userId);
+      toast.success('Successfully unregistered from the event');
+      return { eventId, userId };
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to unregister from event';
+      toast.error('Failed to unregister from event');
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -58,36 +94,26 @@ export const fetchRegisteredEvents = createAsyncThunk(
   'events/fetchRegistered',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8085/api/events/registered`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await eventsApi.getUserRegisteredEvents();
       return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch registered events');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch registered events';
+      return rejectWithValue(errorMessage);
     }
   }
 );
 
 export const createEvent = createAsyncThunk(
   'events/create',
-  async (formData: any, { rejectWithValue, dispatch }) => {
+  async (formData: FormData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Authentication required');
-      }
-      
-      const response = await axios.post('http://localhost:8085/api/events', formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
+      const response = await eventsApi.createEvent(formData);
       toast.success('Event created successfully');
-      dispatch(fetchAllEvents());
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create event';
       toast.error('Failed to create event');
-      return rejectWithValue(error.message || 'Failed to create event');
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -98,9 +124,9 @@ const eventSlice = createSlice({
   reducers: {
     filterEvents: (state, action: PayloadAction<SearchParams>) => {
       const { query, category, date } = action.payload;
-      
+
       let filtered = [...state.events];
-      
+
       if (query) {
         const searchTerm = query.toLowerCase();
         filtered = filtered.filter(
@@ -109,11 +135,11 @@ const eventSlice = createSlice({
             event.description.toLowerCase().includes(searchTerm)
         );
       }
-      
+
       if (category && category !== 'all') {
         filtered = filtered.filter((event) => event.category === category);
       }
-      
+
       if (date) {
         filtered = filtered.filter((event) => {
           const eventDate = new Date(event.date);
@@ -121,7 +147,7 @@ const eventSlice = createSlice({
           return eventDate.toDateString() === searchDate.toDateString();
         });
       }
-      
+
       state.filteredEvents = filtered;
     },
     clearSelectedEvent: (state) => {
@@ -135,10 +161,10 @@ const eventSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAllEvents.fulfilled, (state, action: PayloadAction<Event[]>) => {
+      .addCase(fetchAllEvents.fulfilled, (state, action) => {
         state.loading = false;
-        state.events = action.payload;
-        state.filteredEvents = action.payload;
+        state.events = action.payload as Event[];
+        state.filteredEvents = action.payload as Event[];
       })
       .addCase(fetchAllEvents.rejected, (state, action) => {
         state.loading = false;
@@ -149,9 +175,10 @@ const eventSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchEventById.fulfilled, (state, action: PayloadAction<Event>) => {
+      .addCase(fetchEventById.fulfilled, (state, action: PayloadAction<{event: Event, isRegistered: boolean}>) => {
         state.loading = false;
-        state.selectedEvent = action.payload;
+        state.selectedEvent = action.payload.event;
+        state.isRegistered = action.payload.isRegistered;
       })
       .addCase(fetchEventById.rejected, (state, action) => {
         state.loading = false;
@@ -162,9 +189,9 @@ const eventSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchRegisteredEvents.fulfilled, (state, action: PayloadAction<Event[]>) => {
+      .addCase(fetchRegisteredEvents.fulfilled, (state, action) => {
         state.loading = false;
-        state.registeredEvents = action.payload;
+        state.registeredEvents = action.payload as Event[];
       })
       .addCase(fetchRegisteredEvents.rejected, (state, action) => {
         state.loading = false;
@@ -179,6 +206,40 @@ const eventSlice = createSlice({
         state.loading = false;
       })
       .addCase(createEvent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // Register for Event
+      .addCase(registerForEvent.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerForEvent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isRegistered = true;
+        if (state.selectedEvent) {
+          state.selectedEvent.attendees.push(action.payload.userId);
+        }
+      })
+      .addCase(registerForEvent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // Unregister from Event
+      .addCase(unregisterFromEvent.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(unregisterFromEvent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isRegistered = false;
+        if (state.selectedEvent) {
+          state.selectedEvent.attendees = state.selectedEvent.attendees.filter(
+            (attendee) => attendee !== action.payload.userId
+          );
+        }
+      })
+      .addCase(unregisterFromEvent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

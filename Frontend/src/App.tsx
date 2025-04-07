@@ -5,8 +5,9 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "./store";
+import { useAppDispatch } from "./hooks/reduxHooks";
 import { fetchAllEvents, filterEvents } from "./store/slices/eventSlice";
 import { logout } from "./store/slices/authSlice";
 import HomePage from "./pages/HomePage";
@@ -25,19 +26,18 @@ import ForgotPassword from "./pages/ForgotPasswordPage";
 import ChangePassword from "./pages/ChangePasswordPage";
 
 const App: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { filteredEvents } = useSelector((state: RootState) => state.events);
   const email = localStorage.getItem("email");
 
   useEffect(() => {
     // Fetch events when the app loads
-    // Using any to avoid type errors with AsyncThunk
-    dispatch(fetchAllEvents() as any);
+    dispatch(fetchAllEvents());
   }, [dispatch]);
 
   const handleSearch = (searchParams: { location: string; tags: string; month: string }) => {
-    dispatch(filterEvents(searchParams as any));
+    dispatch(filterEvents(searchParams));
   };
 
   const handleLogout = () => {

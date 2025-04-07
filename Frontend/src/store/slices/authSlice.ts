@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { AuthService } from '../../api/AuthAPI';
+import { authApi } from '../../api/apiService';
 import { LoginCredentials } from '../../types/authProps';
 import { toast } from 'react-toastify';
 
@@ -24,13 +24,16 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
-      const response = await AuthService.login(credentials);
-      localStorage.setItem('token', response.token);
+      const response = await authApi.login(credentials);
+      const data = response.data;
+      localStorage.setItem('token', data.token);
       localStorage.setItem('email', credentials.email);
-      return response;
-    } catch (error: any) {
+      toast.success('Login successful');
+      return data;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
       toast.error('Login failed. Please try again.');
-      return rejectWithValue(error.message || 'Login failed');
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -39,13 +42,16 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData: any, { rejectWithValue }) => {
     try {
-      const response = await AuthService.register(userData);
-      localStorage.setItem('token', response.token);
+      const response = await authApi.register(userData);
+      const data = response.data;
+      localStorage.setItem('token', data.token);
       localStorage.setItem('email', userData.email);
-      return response;
-    } catch (error: any) {
+      toast.success('Registration successful');
+      return data;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
       toast.error('Registration failed. Please try again.');
-      return rejectWithValue(error.message || 'Registration failed');
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -54,12 +60,32 @@ export const changePassword = createAsyncThunk(
   'auth/changePassword',
   async (passwordData: any, { rejectWithValue }) => {
     try {
-      await AuthService.changePassword(passwordData);
+      await authApi.changePassword(passwordData);
       toast.success('Password changed successfully');
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to change password';
       toast.error('Failed to change password. Please try again.');
-      return rejectWithValue(error.message || 'Failed to change password');
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      await authApi.logout();
+      localStorage.removeItem('token');
+      localStorage.removeItem('email');
+      toast.info('Logged out successfully');
+      return true;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Logout failed';
+      // Still remove the token even if the API call fails
+      localStorage.removeItem('token');
+      localStorage.removeItem('email');
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -68,14 +94,6 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout: (state) => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('email');
-      state.isAuthenticated = false;
-      state.token = null;
-      state.email = null;
-      toast.info('Logged out successfully');
-    },
     setCookieConsent: (state) => {
       // This is just to track the cookie consent in the state if needed
       // The actual cookie is set by the backend
@@ -122,9 +140,26 @@ const authSlice = createSlice({
       .addCase(changePassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      // Logout
+      .addCase(logout.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.token = null;
+        state.email = null;
+      })
+      .addCase(logout.rejected, (state) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.token = null;
+        state.email = null;
       });
   },
 });
 
-export const { logout, setCookieConsent } = authSlice.actions;
+export const { setCookieConsent } = authSlice.actions;
 export default authSlice.reducer;

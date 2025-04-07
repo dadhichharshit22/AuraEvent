@@ -1,5 +1,7 @@
-import React from "react";
-import { useProfile } from "@/hooks/useProfile";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import { fetchUserProfile, getDefaultProfile } from "../store/slices/userSlice";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileItem from "@/components/profile/ProfileItem";
 import ProfileSection from "@/components/profile/ProfileSection";

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import { fetchEventById, registerForEvent, unregisterFromEvent } from "../store/slices/eventSlice";
 import { toast } from "react-toastify";
-import { extractUserIdFromJwt } from "../utils/userFromToken";
 import {
   Calendar,
   MapPin,
@@ -28,8 +29,8 @@ import { Instagram, Linkedin } from "lucide-react";
 
 const EventDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [event, setEvent] = useState<Event | null>(null);
-  const [isRegistered, setIsRegistered] = useState(false);
+  const dispatch = useDispatch();
+  const { selectedEvent: event, isRegistered, loading } = useSelector((state: RootState) => state.events);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showUnregisterModal, setShowUnregisterModal] = useState(false);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
@@ -40,6 +41,14 @@ const EventDetails: React.FC = () => {
   });
   const navigate = useNavigate();
 
+  // Fetch event details when component mounts
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchEventById(id) as any);
+    }
+  }, [dispatch, id]);
+
+  // Calculate countdown timer
   useEffect(() => {
     if (!event) return;
 
@@ -63,66 +72,51 @@ const EventDetails: React.FC = () => {
 
     return () => clearInterval(timer);
   }, [event]);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userId = extractUserIdFromJwt();
 
-    axios
-      .get(`http://localhost:8085/api/events/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        setEvent(response.data);
-        setIsRegistered(response.data.attendees.includes(userId));
-        setQrCodeUrl(response.data.qrCodeUrl); 
-      })
-      .catch((error) => {
-        console.error("Error fetching event details:", error);
-        if (error.response?.status === 401) {
-          toast.error("Unauthorized. Please log in again.");
-        }
-      });
-  }, [id]);
+  // Get user ID from JWT token
+  const getUserIdFromToken = (): string => {
+    const token = localStorage.getItem('token');
+    if (!token) return '';
+
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+
+      const payload = JSON.parse(jsonPayload);
+      return payload.userId || '';
+    } catch (error) {
+      console.error('Error extracting user ID from token:', error);
+      return '';
+    }
+  };
 
   const handleRegister = async () => {
-    const userId = extractUserIdFromJwt();
-    const token = localStorage.getItem("token");
+    if (!event) return;
+
+    const userId = getUserIdFromToken();
+    if (!userId) {
+      toast.error("Authentication required");
+      return;
+    }
 
     try {
       if (event.type === "Paid") {
+        const token = localStorage.getItem("token");
         await payEventFee(token, event._id, userId, {
           firstName: "Dadhich",
           lastName: "Shaabh",
           email: "abc@gmail.com",
         });
-        setEvent((prevEvent) =>
-          prevEvent
-            ? {
-                ...prevEvent,
-                attendees: [...prevEvent.attendees, userId],
-              }
-            : null
-        );
-        setIsRegistered(true);
+        dispatch(registerForEvent({ eventId: event._id, userId }) as any);
         setShowSuccessModal(true);
       } else {
-        await axios.post(
-          `http://localhost:8085/api/events/${id}/register`,
-          { userId },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setEvent((prevEvent) =>
-          prevEvent
-            ? {
-                ...prevEvent,
-                attendees: [...prevEvent.attendees, userId],
-              }
-            : null
-        );
-        setIsRegistered(true);
+        dispatch(registerForEvent({ eventId: event._id, userId }) as any);
         setShowSuccessModal(true);
       }
     } catch (error) {
@@ -132,38 +126,24 @@ const EventDetails: React.FC = () => {
   };
 
   const handleUnregister = async () => {
-    const userId = extractUserIdFromJwt();
-    const token = localStorage.getItem("token");
-    console.log(userId);
-    console.log(token);
+    if (!event) return;
+
+    const userId = getUserIdFromToken();
+    if (!userId) {
+      toast.error("Authentication required");
+      return;
+    }
+
     try {
-      await axios.post(
-        `http://localhost:8085/api/events/${id}/unregister`,
-        { userId },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setEvent((prevEvent) =>
-        prevEvent
-          ? {
-              ...prevEvent,
-              attendees: prevEvent.attendees.filter(
-                (attendee) => attendee !== userId
-              ),
-            }
-          : null
-      );
-      setIsRegistered(false);
+      dispatch(unregisterFromEvent({ eventId: event._id, userId }) as any);
       setShowUnregisterModal(false);
-      toast.success("Successfully unregistered from the event");
     } catch (error) {
       toast.error("Failed to unregister");
       console.error("Error during unregistration:", error);
     }
   };
 
-  if (!event) {
+  if (loading || !event) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-pulse text-xl text-gray-600">Loading...</div>
@@ -268,14 +248,14 @@ const EventDetails: React.FC = () => {
                   </p>
                 </div>
               )}
-              {isRegistered && qrCodeUrl && (
+              {isRegistered && event.qrCodeUrl && (
   <div className="mt-6 text-center">
     <h3 className="font-medium text-lg text-purple-700">Your Event QR Code</h3>
-    <img src={qrCodeUrl} alt="Event QR Code" className="w-40 h-40 mx-auto mt-2 border border-gray-300 rounded-lg shadow-lg" />
+    <img src={event.qrCodeUrl} alt="Event QR Code" className="w-40 h-40 mx-auto mt-2 border border-gray-300 rounded-lg shadow-lg" />
   </div>
 )}
               {isRegistered ? (
-                
+
                 <Button
                   variant="destructive"
                   className="w-full"
@@ -317,7 +297,7 @@ const EventDetails: React.FC = () => {
                     rel="noopener noreferrer"
                   >
                     {/* <Instagram /> */}
-                    <Instagram className="w-5 h-5" />  
+                    <Instagram className="w-5 h-5" />
                   </a>
                 </Button>
                 <Button
