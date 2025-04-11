@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Event } from "../types/eventProps";
-import { EventService } from "../api/RegisteredAPI";
+import { EventService } from "../api/apiService";
 
 export const useRegisteredEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);

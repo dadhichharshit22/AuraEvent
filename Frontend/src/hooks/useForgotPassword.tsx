@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { sendOTP, verifyOTP } from "../api/ForgotPasswordAPI";
+import { sendOTP, verifyOTP } from "../api/apiService";
 
 export const useForgotPassword = () => {
   const [email, setEmail] = useState("");

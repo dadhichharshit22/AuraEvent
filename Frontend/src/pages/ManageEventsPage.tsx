@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import EventService from "../api/ManageEventAPI";
+import EventService from "../api/apiService";
 import { Event } from "@/types/eventProps";
 import { Button } from "@/components/ui/button";
 import {
